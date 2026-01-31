@@ -126,7 +126,7 @@ export default function DocumentsPage() {
           {documents.map((doc, index) => (
             <div
               key={doc.id}
-              className={`p-6 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-300 group ${
+              className={`p-6 hover:bg-gradient-to-r hover:from-blue-50 hover:to-slate-50 transition-all duration-300 group ${
                 mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
               }`}
               style={{
@@ -140,7 +140,7 @@ export default function DocumentsPage() {
                     {getTypeIcon(doc.type)}
                   </span>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                    <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                       {doc.name}
                     </h3>
                     <p className="text-sm text-gray-600 mt-1">
@@ -161,7 +161,7 @@ export default function DocumentsPage() {
                       ✓ {doc.status}
                     </span>
                   </div>
-                  <button className="px-4 py-2 bg-gradient-to-r from-slate-900 to-purple-900 text-white text-sm rounded-lg hover:from-purple-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md">
+                  <button className="px-4 py-2 bg-gradient-to-r from-slate-900 to-blue-900 text-white text-sm rounded-lg hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md">
                     Download
                   </button>
                 </div>
@@ -174,7 +174,7 @@ export default function DocumentsPage() {
                     {getTypeIcon(doc.type)}
                   </span>
                   <div>
-                    <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+                    <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                       {doc.name}
                     </h3>
                     <p className="text-sm text-gray-500">{doc.fileSize}</p>
@@ -194,7 +194,7 @@ export default function DocumentsPage() {
                   </span>
                 </div>
                 <div>
-                  <button className="px-4 py-2 bg-gradient-to-r from-slate-900 to-purple-900 text-white text-sm rounded-lg hover:from-purple-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-xl">
+                  <button className="px-4 py-2 bg-gradient-to-r from-slate-900 to-blue-900 text-white text-sm rounded-lg hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-xl">
                     Download
                   </button>
                 </div>
@@ -213,7 +213,7 @@ export default function DocumentsPage() {
           style={{ transitionDelay: "700ms" }}
         >
           <p className="text-sm text-gray-600 mb-1">Total Documents</p>
-          <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
             {documents.length}
           </p>
         </div>

@@ -129,7 +129,7 @@ export default function DealsPage() {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
               {/* New badge */}
-              <div className="absolute top-3 right-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+              <div className="absolute top-3 right-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
                 NEW
               </div>
             </div>
@@ -137,7 +137,7 @@ export default function DealsPage() {
             {/* Property Details */}
             <div className="p-5">
               {/* Address */}
-              <h3 className="font-semibold text-lg text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
+              <h3 className="font-semibold text-lg text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                 {deal.address}
               </h3>
 
@@ -180,7 +180,7 @@ export default function DealsPage() {
               {/* Purchase Price */}
               <div className="mb-4 pt-3 border-t border-gray-200">
                 <p className="text-sm text-gray-600 mb-1">Purchase Price</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-purple-600 bg-clip-text text-transparent">
+                <p className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-blue-600 bg-clip-text text-transparent">
                   {formatPrice(deal.purchasePrice)}
                 </p>
               </div>
@@ -188,7 +188,7 @@ export default function DealsPage() {
               {/* More Info Button */}
               <button
                 onClick={handleMoreInfo}
-                className="w-full bg-gradient-to-r from-slate-900 to-purple-900 text-white py-2.5 px-4 rounded-lg font-medium hover:from-purple-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-xl"
+                className="w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-2.5 px-4 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-xl"
               >
                 Click for More Info
               </button>
@@ -225,7 +225,7 @@ export default function DealsPage() {
             {/* Sales Agent Photo with ring animation */}
             <div className="flex justify-center mb-6">
               <div className="relative">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 ring-4 ring-purple-300 animate-pulse">
+                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 ring-4 ring-blue-300 animate-pulse">
                   <img
                     src={salesAgent.photo}
                     alt={salesAgent.name}
@@ -246,7 +246,7 @@ export default function DealsPage() {
               </p>
 
               {/* Agent Info with gradient background */}
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 mb-6 border border-purple-200">
+              <div className="bg-gradient-to-r from-blue-50 to-slate-50 rounded-lg p-4 mb-6 border border-blue-200">
                 <p className="font-semibold text-gray-900 mb-2">
                   {salesAgent.name}
                 </p>
@@ -257,7 +257,7 @@ export default function DealsPage() {
               {/* Close Button */}
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="w-full bg-gradient-to-r from-slate-900 to-purple-900 text-white py-2.5 px-4 rounded-lg font-medium hover:from-purple-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md"
+                className="w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-2.5 px-4 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md"
               >
                 Close
               </button>

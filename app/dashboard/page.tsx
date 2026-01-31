@@ -97,7 +97,7 @@ export default function DashboardPage() {
           mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
         }`}
       >
-        <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg shadow-lg p-6 text-white">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-lg p-6 text-white">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-xl font-bold">Investment Journey</h3>
             <span className="text-2xl">🚀</span>
@@ -137,7 +137,7 @@ export default function DashboardPage() {
               key={achievement.name}
               className={`bg-white rounded-lg shadow-md p-4 border-2 text-center transition-all duration-500 ${
                 achievement.unlocked
-                  ? "border-yellow-400 scale-100 hover:scale-105"
+                  ? "border-blue-400 scale-100 hover:scale-105"
                   : "border-gray-200 opacity-50 grayscale"
               }`}
               style={{
@@ -209,7 +209,7 @@ export default function DashboardPage() {
           Your Sales Agent
         </h3>
         <div className="flex items-start gap-6">
-          <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 ring-4 ring-purple-200 transition-all hover:ring-purple-400 hover:scale-105 duration-300">
+          <div className="relative w-24 h-24 rounded-full overflow-hidden bg-gray-200 flex-shrink-0 ring-4 ring-blue-200 transition-all hover:ring-blue-400 hover:scale-105 duration-300">
             <img
               src={salesAgent.photo}
               alt={salesAgent.name}
