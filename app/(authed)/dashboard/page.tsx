@@ -8,20 +8,20 @@ export default function DashboardPage() {
   // Investment Preferences State
   const [locations, setLocations] = useState<string[]>([]);
   const [locationInput, setLocationInput] = useState("");
-  const [assetClasses, setAssetClasses] = useState<string[]>([]);
+  const [assetClass, setAssetClass] = useState("");
   const [priceRange, setPriceRange] = useState("");
-  const [capitalTypes, setCapitalTypes] = useState<string[]>([]);
+  const [capitalType, setCapitalType] = useState("");
   const [investSolo, setInvestSolo] = useState("");
   const [openToJV, setOpenToJV] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
-  const [notificationPref, setNotificationPref] = useState("all");
+  const [notificationPref, setNotificationPref] = useState("");
 
   // Mock properties data
   const propertiesBought = [
     {
       id: 1,
       propertyType: "Single Family",
-      location: "Austin, TX",
+      location: "Travis County, TX",
       purchasePrice: 485000,
       closeDate: "2024-01-15",
       status: "Closed",
@@ -29,7 +29,7 @@ export default function DashboardPage() {
     {
       id: 2,
       propertyType: "Small Multifamily",
-      location: "Dallas, TX",
+      location: "Dallas County, TX",
       purchasePrice: 825000,
       closeDate: "2024-03-22",
       status: "Closed",
@@ -37,7 +37,7 @@ export default function DashboardPage() {
     {
       id: 3,
       propertyType: "Single Family",
-      location: "Houston, TX",
+      location: "Harris County, TX",
       purchasePrice: 395000,
       closeDate: "2024-06-10",
       status: "Under Contract",
@@ -122,22 +122,6 @@ export default function DashboardPage() {
     setLocations(locations.filter((l) => l !== location));
   };
 
-  const toggleAssetClass = (assetClass: string) => {
-    setAssetClasses((prev) =>
-      prev.includes(assetClass)
-        ? prev.filter((a) => a !== assetClass)
-        : [...prev, assetClass]
-    );
-  };
-
-  const toggleCapitalType = (capitalType: string) => {
-    setCapitalTypes((prev) =>
-      prev.includes(capitalType)
-        ? prev.filter((c) => c !== capitalType)
-        : [...prev, capitalType]
-    );
-  };
-
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -147,8 +131,19 @@ export default function DashboardPage() {
   };
 
   const handleSavePreferences = () => {
-    // TODO: Save preferences to backend
-    alert("Preferences saved! (Backend integration pending)");
+    // TODO: Save preferences to Salesforce API
+    const preferences = {
+      counties: locations,
+      assetClass,
+      priceRange,
+      capitalType,
+      investSolo,
+      openToJV,
+      additionalNotes,
+      notificationPref,
+    };
+    console.log("Saving to Salesforce:", preferences);
+    alert("Preferences saved! (Salesforce API integration pending)");
   };
 
   return (
@@ -181,10 +176,10 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-6">
-          {/* Location Preferences */}
+          {/* County Preferences */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Location Preferences
+              County Preferences
             </label>
             <div className="flex gap-2 mb-3">
               <input
@@ -197,7 +192,7 @@ export default function DashboardPage() {
                     addLocation();
                   }
                 }}
-                placeholder="Search cities or counties..."
+                placeholder="Search counties..."
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button
@@ -225,26 +220,23 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* Asset Class Preferences */}
+          {/* Asset Class Preference */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Asset Class Preferences (Multi-select)
+              Asset Class Preference
             </label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {assetClassOptions.map((assetClass) => (
-                <button
-                  key={assetClass}
-                  onClick={() => toggleAssetClass(assetClass)}
-                  className={`px-4 py-2.5 rounded-lg border-2 font-medium transition-all ${
-                    assetClasses.includes(assetClass)
-                      ? "border-blue-500 bg-blue-50 text-blue-700"
-                      : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
-                  }`}
-                >
-                  {assetClass}
-                </button>
+            <select
+              value={assetClass}
+              onChange={(e) => setAssetClass(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              <option value="">Select asset class...</option>
+              {assetClassOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
               ))}
-            </div>
+            </select>
           </div>
 
           {/* Purchase Price Range */}
@@ -269,23 +261,20 @@ export default function DashboardPage() {
           {/* Capital Type */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Capital Type (Multi-select)
+              Capital Type
             </label>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {capitalTypeOptions.map((capitalType) => (
-                <button
-                  key={capitalType}
-                  onClick={() => toggleCapitalType(capitalType)}
-                  className={`px-4 py-2.5 rounded-lg border-2 font-medium transition-all ${
-                    capitalTypes.includes(capitalType)
-                      ? "border-green-500 bg-green-50 text-green-700"
-                      : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
-                  }`}
-                >
-                  {capitalType}
-                </button>
+            <select
+              value={capitalType}
+              onChange={(e) => setCapitalType(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              <option value="">Select capital type...</option>
+              {capitalTypeOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
               ))}
-            </div>
+            </select>
           </div>
 
           {/* Partner Information */}
@@ -294,60 +283,30 @@ export default function DashboardPage() {
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Do you invest solo or with partners?
               </label>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="investSolo"
-                    value="solo"
-                    checked={investSolo === "solo"}
-                    onChange={(e) => setInvestSolo(e.target.value)}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <span className="text-gray-700">Solo</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="investSolo"
-                    value="partners"
-                    checked={investSolo === "partners"}
-                    onChange={(e) => setInvestSolo(e.target.value)}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <span className="text-gray-700">With Partners</span>
-                </label>
-              </div>
+              <select
+                value={investSolo}
+                onChange={(e) => setInvestSolo(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              >
+                <option value="">Select...</option>
+                <option value="solo">Solo</option>
+                <option value="partners">With Partners</option>
+              </select>
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Are you open to joint ventures or equity splits?
               </label>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="openToJV"
-                    value="yes"
-                    checked={openToJV === "yes"}
-                    onChange={(e) => setOpenToJV(e.target.value)}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <span className="text-gray-700">Yes</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="openToJV"
-                    value="no"
-                    checked={openToJV === "no"}
-                    onChange={(e) => setOpenToJV(e.target.value)}
-                    className="w-4 h-4 text-blue-600"
-                  />
-                  <span className="text-gray-700">No</span>
-                </label>
-              </div>
+              <select
+                value={openToJV}
+                onChange={(e) => setOpenToJV(e.target.value)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              >
+                <option value="">Select...</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
             </div>
           </div>
 
@@ -370,32 +329,17 @@ export default function DashboardPage() {
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Notification Preferences
             </label>
-            <div className="space-y-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="notificationPref"
-                  value="matched"
-                  checked={notificationPref === "matched"}
-                  onChange={(e) => setNotificationPref(e.target.value)}
-                  className="w-4 h-4 text-blue-600"
-                />
-                <span className="text-gray-700">
-                  Only receive deals that match my criteria
-                </span>
-              </label>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="notificationPref"
-                  value="all"
-                  checked={notificationPref === "all"}
-                  onChange={(e) => setNotificationPref(e.target.value)}
-                  className="w-4 h-4 text-blue-600"
-                />
-                <span className="text-gray-700">Receive all deals</span>
-              </label>
-            </div>
+            <select
+              value={notificationPref}
+              onChange={(e) => setNotificationPref(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+            >
+              <option value="">Select notification preference...</option>
+              <option value="matched">
+                Only receive deals that match my criteria
+              </option>
+              <option value="all">Receive all deals</option>
+            </select>
           </div>
 
           {/* Save Button */}
@@ -439,7 +383,7 @@ export default function DashboardPage() {
                     Property Type
                   </th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">
-                    Location
+                    County
                   </th>
                   <th className="text-left py-3 px-4 font-semibold text-gray-700">
                     Purchase Price
