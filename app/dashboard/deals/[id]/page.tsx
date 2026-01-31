@@ -29,6 +29,9 @@ export default function DealDetailPage() {
       arv: 650000,
       description: "Beautiful 4-bedroom home in the heart of Austin. Features modern updates, open floor plan, and a spacious backyard perfect for entertaining. Located in a highly desirable neighborhood with excellent schools.",
       dropboxLink: "https://www.dropbox.com/sh/example1/photos",
+      roofAge: 6,
+      foundationRepair: false,
+      hvacAge: 4,
     },
     {
       id: 2,
@@ -42,6 +45,9 @@ export default function DealDetailPage() {
       arv: 520000,
       description: "Stunning contemporary home in prime Dallas location. Recently built with energy-efficient features, granite countertops, and hardwood floors throughout. Close to downtown and major highways.",
       dropboxLink: "https://www.dropbox.com/sh/example2/photos",
+      roofAge: 4,
+      foundationRepair: false,
+      hvacAge: 3,
     },
     {
       id: 3,
@@ -55,6 +61,9 @@ export default function DealDetailPage() {
       arv: 825000,
       description: "Luxurious 5-bedroom estate with high-end finishes. Features include a gourmet kitchen, master suite with spa-like bathroom, and beautifully landscaped grounds. Perfect for growing families.",
       dropboxLink: "https://www.dropbox.com/sh/example3/photos",
+      roofAge: 5,
+      foundationRepair: true,
+      hvacAge: 5,
     },
     {
       id: 4,
@@ -68,6 +77,9 @@ export default function DealDetailPage() {
       arv: 550000,
       description: "Modern townhome in vibrant San Antonio neighborhood. Open concept living with designer finishes, smart home features, and a private patio. Walking distance to shops and restaurants.",
       dropboxLink: "https://www.dropbox.com/sh/example4/photos",
+      roofAge: 3,
+      foundationRepair: false,
+      hvacAge: 2,
     },
     {
       id: 5,
@@ -81,6 +93,9 @@ export default function DealDetailPage() {
       arv: 720000,
       description: "Brand new construction in sought-after Fort Worth community. Features include quartz countertops, stainless steel appliances, and a spacious master closet. Move-in ready with builder warranty.",
       dropboxLink: "https://www.dropbox.com/sh/example5/photos",
+      roofAge: 2,
+      foundationRepair: false,
+      hvacAge: 1,
     },
     {
       id: 6,
@@ -94,6 +109,9 @@ export default function DealDetailPage() {
       arv: 475000,
       description: "Charming single-story home in family-friendly Plano. Updated kitchen and bathrooms, large backyard with mature trees, and oversized garage. Excellent Plano schools and close to parks.",
       dropboxLink: "https://www.dropbox.com/sh/example6/photos",
+      roofAge: 7,
+      foundationRepair: true,
+      hvacAge: 8,
     },
   ];
 
@@ -232,9 +250,46 @@ export default function DealDetailPage() {
             </div>
           </div>
 
-          {/* Dropbox Link */}
+          {/* Rehab Details */}
           <div
             className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 transition-all duration-700 delay-500 ${
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}
+          >
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Rehab Details
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Roof Age</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {deal.roofAge} {deal.roofAge === 1 ? "year" : "years"}
+                </p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">HVAC Age</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {deal.hvacAge} {deal.hvacAge === 1 ? "year" : "years"}
+                </p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg col-span-2">
+                <p className="text-sm text-gray-600 mb-1">
+                  Foundation Repair Needed
+                </p>
+                <p
+                  className={`text-xl font-bold ${
+                    deal.foundationRepair ? "text-red-600" : "text-green-600"
+                  }`}
+                >
+                  {deal.foundationRepair ? "Yes" : "No"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Dropbox Link */}
+          <div
+            className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 transition-all duration-700 delay-600 ${
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
@@ -256,7 +311,7 @@ export default function DealDetailPage() {
         {/* Right Column - Financial Calculator */}
         <div className="lg:col-span-1">
           <div
-            className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 sticky top-8 transition-all duration-700 delay-600 ${
+            className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 sticky top-8 transition-all duration-700 delay-700 ${
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >

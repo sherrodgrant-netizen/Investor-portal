@@ -25,6 +25,9 @@ export default function DealsPage() {
       arv: 650000,
       description: "Beautiful 4-bedroom home in the heart of Austin. Features modern updates, open floor plan, and a spacious backyard perfect for entertaining. Located in a highly desirable neighborhood with excellent schools.",
       dropboxLink: "https://www.dropbox.com/sh/example1/photos",
+      roofAge: 6,
+      foundationRepair: false,
+      hvacAge: 4,
     },
     {
       id: 2,
@@ -38,6 +41,9 @@ export default function DealsPage() {
       arv: 520000,
       description: "Stunning contemporary home in prime Dallas location. Recently built with energy-efficient features, granite countertops, and hardwood floors throughout. Close to downtown and major highways.",
       dropboxLink: "https://www.dropbox.com/sh/example2/photos",
+      roofAge: 4,
+      foundationRepair: false,
+      hvacAge: 3,
     },
     {
       id: 3,
@@ -51,6 +57,9 @@ export default function DealsPage() {
       arv: 825000,
       description: "Luxurious 5-bedroom estate with high-end finishes. Features include a gourmet kitchen, master suite with spa-like bathroom, and beautifully landscaped grounds. Perfect for growing families.",
       dropboxLink: "https://www.dropbox.com/sh/example3/photos",
+      roofAge: 5,
+      foundationRepair: true,
+      hvacAge: 5,
     },
     {
       id: 4,
@@ -64,6 +73,9 @@ export default function DealsPage() {
       arv: 550000,
       description: "Modern townhome in vibrant San Antonio neighborhood. Open concept living with designer finishes, smart home features, and a private patio. Walking distance to shops and restaurants.",
       dropboxLink: "https://www.dropbox.com/sh/example4/photos",
+      roofAge: 3,
+      foundationRepair: false,
+      hvacAge: 2,
     },
     {
       id: 5,
@@ -77,6 +89,9 @@ export default function DealsPage() {
       arv: 720000,
       description: "Brand new construction in sought-after Fort Worth community. Features include quartz countertops, stainless steel appliances, and a spacious master closet. Move-in ready with builder warranty.",
       dropboxLink: "https://www.dropbox.com/sh/example5/photos",
+      roofAge: 2,
+      foundationRepair: false,
+      hvacAge: 1,
     },
     {
       id: 6,
@@ -90,6 +105,9 @@ export default function DealsPage() {
       arv: 475000,
       description: "Charming single-story home in family-friendly Plano. Updated kitchen and bathrooms, large backyard with mature trees, and oversized garage. Excellent Plano schools and close to parks.",
       dropboxLink: "https://www.dropbox.com/sh/example6/photos",
+      roofAge: 7,
+      foundationRepair: true,
+      hvacAge: 8,
     },
   ];
 
