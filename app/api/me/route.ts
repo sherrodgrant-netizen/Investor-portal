@@ -1,22 +1,18 @@
 import { NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { getSession } from "@/lib/auth";
 
 export async function GET() {
-  const cookieStore = await cookies();
-  const authToken = cookieStore.get("auth_token");
+  const session = await getSession();
 
-  if (!authToken) {
+  if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // TODO: Validate token and fetch real user data
-  // For now, return mock user data
+  // Return session data
   return NextResponse.json({
     user: {
-      id: "1",
-      email: "demo@investor.com",
-      name: "Demo Investor",
-      role: "investor",
+      contactId: session.contactId,
+      email: session.email,
     },
   });
 }

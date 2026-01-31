@@ -19,11 +19,25 @@ export default function RequestAccessPage() {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      const response = await fetch("/api/request-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-    setSubmitted(true);
-    setLoading(false);
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Request failed");
+      }
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Failed to submit request:", error);
+      alert("Failed to submit request. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
