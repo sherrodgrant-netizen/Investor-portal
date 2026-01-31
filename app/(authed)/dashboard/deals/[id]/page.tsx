@@ -1,128 +1,48 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import Link from "next/link";
+import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { getDealById } from "@/lib/mockDeals";
+import { ComparableAverages } from "@/types/deal";
+import PropertyMap from "@/components/PropertyMap";
 
 export default function DealDetailPage() {
   const params = useParams();
-  const dealId = parseInt(params.id as string);
-  const [rehabCost, setRehabCost] = useState<string>("");
-  const [mounted, setMounted] = useState(false);
+  const dealId = params.id as string;
+  const deal = getDealById(dealId);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [arv, setArv] = useState(deal?.arv || 0);
+  const [estimatedRehab, setEstimatedRehab] = useState(
+    deal?.rehab.estimatedRehabTotal || 0
+  );
+  const [showContractorModal, setShowContractorModal] = useState(false);
 
-  // This would ideally come from a database or API
-  const deals = [
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80",
-      address: "1234 Maple Street, Austin, TX 78701",
-      beds: 4,
-      baths: 3,
-      sqft: 2400,
-      yearBuilt: 2018,
-      purchasePrice: 485000,
-      arv: 650000,
-      description: "Beautiful 4-bedroom home in the heart of Austin. Features modern updates, open floor plan, and a spacious backyard perfect for entertaining. Located in a highly desirable neighborhood with excellent schools.",
-      dropboxLink: "https://www.dropbox.com/sh/example1/photos",
-      roofAge: 6,
-      foundationRepair: false,
-      hvacAge: 4,
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80",
-      address: "5678 Oak Avenue, Dallas, TX 75201",
-      beds: 3,
-      baths: 2,
-      sqft: 1850,
-      yearBuilt: 2020,
-      purchasePrice: 395000,
-      arv: 520000,
-      description: "Stunning contemporary home in prime Dallas location. Recently built with energy-efficient features, granite countertops, and hardwood floors throughout. Close to downtown and major highways.",
-      dropboxLink: "https://www.dropbox.com/sh/example2/photos",
-      roofAge: 4,
-      foundationRepair: false,
-      hvacAge: 3,
-    },
-    {
-      id: 3,
-      image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80",
-      address: "9012 Pine Boulevard, Houston, TX 77002",
-      beds: 5,
-      baths: 4,
-      sqft: 3200,
-      yearBuilt: 2019,
-      purchasePrice: 625000,
-      arv: 825000,
-      description: "Luxurious 5-bedroom estate with high-end finishes. Features include a gourmet kitchen, master suite with spa-like bathroom, and beautifully landscaped grounds. Perfect for growing families.",
-      dropboxLink: "https://www.dropbox.com/sh/example3/photos",
-      roofAge: 5,
-      foundationRepair: true,
-      hvacAge: 5,
-    },
-    {
-      id: 4,
-      image: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&q=80",
-      address: "3456 Cedar Lane, San Antonio, TX 78205",
-      beds: 3,
-      baths: 2.5,
-      sqft: 2100,
-      yearBuilt: 2021,
-      purchasePrice: 425000,
-      arv: 550000,
-      description: "Modern townhome in vibrant San Antonio neighborhood. Open concept living with designer finishes, smart home features, and a private patio. Walking distance to shops and restaurants.",
-      dropboxLink: "https://www.dropbox.com/sh/example4/photos",
-      roofAge: 3,
-      foundationRepair: false,
-      hvacAge: 2,
-    },
-    {
-      id: 5,
-      image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
-      address: "7890 Birch Court, Fort Worth, TX 76102",
-      beds: 4,
-      baths: 3.5,
-      sqft: 2800,
-      yearBuilt: 2022,
-      purchasePrice: 550000,
-      arv: 720000,
-      description: "Brand new construction in sought-after Fort Worth community. Features include quartz countertops, stainless steel appliances, and a spacious master closet. Move-in ready with builder warranty.",
-      dropboxLink: "https://www.dropbox.com/sh/example5/photos",
-      roofAge: 2,
-      foundationRepair: false,
-      hvacAge: 1,
-    },
-    {
-      id: 6,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
-      address: "2468 Elm Drive, Plano, TX 75023",
-      beds: 3,
-      baths: 2,
-      sqft: 1650,
-      yearBuilt: 2017,
-      purchasePrice: 365000,
-      arv: 475000,
-      description: "Charming single-story home in family-friendly Plano. Updated kitchen and bathrooms, large backyard with mature trees, and oversized garage. Excellent Plano schools and close to parks.",
-      dropboxLink: "https://www.dropbox.com/sh/example6/photos",
-      roofAge: 7,
-      foundationRepair: true,
-      hvacAge: 8,
-    },
-  ];
+  // Calculate comparable averages
+  const comparableAverages = useMemo((): ComparableAverages | null => {
+    if (!deal || deal.comparables.length === 0) return null;
 
-  const deal = deals.find((d) => d.id === dealId);
+    const comps = deal.comparables;
+    const avg = {
+      beds: comps.reduce((sum, c) => sum + c.beds, 0) / comps.length,
+      baths: comps.reduce((sum, c) => sum + c.baths, 0) / comps.length,
+      sqft: Math.round(comps.reduce((sum, c) => sum + c.sqft, 0) / comps.length),
+      yearBuilt: Math.round(
+        comps.reduce((sum, c) => sum + c.yearBuilt, 0) / comps.length
+      ),
+      garageSize: "Mixed",
+      lotSize: "Varies",
+      notes: "Averages",
+    };
+
+    return avg;
+  }, [deal]);
 
   if (!deal) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Deal not found
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">Deal not found</h2>
         <Link
           href="/dashboard/deals"
           className="text-blue-600 hover:text-blue-800 underline"
@@ -141,23 +61,27 @@ export default function DealDetailPage() {
     }).format(price);
   };
 
-  // Calculate potential profit: (ARV - rehab - purchase price) * 0.98
   const calculateProfit = () => {
-    const rehab = parseFloat(rehabCost) || 0;
-    const profit = (deal.arv - rehab - deal.purchasePrice) * 0.98;
-    return profit;
+    return (arv - estimatedRehab - deal.purchasePrice) * 0.98;
   };
 
-  const potentialProfit = calculateProfit();
+  const getConditionColor = (condition: string) => {
+    switch (condition) {
+      case "Turn Key":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "Fair":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "Needs Work":
+        return "bg-red-100 text-red-800 border-red-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
 
   return (
     <div>
-      {/* Back Button */}
-      <div
-        className={`mb-6 transition-all duration-700 ${
-          mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
-        }`}
-      >
+      {/* Back Link */}
+      <div className="mb-6">
         <Link
           href="/dashboard/deals"
           className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors"
@@ -166,161 +90,363 @@ export default function DealDetailPage() {
         </Link>
       </div>
 
-      {/* Property Image */}
-      <div
-        className={`relative h-96 w-full bg-gray-200 rounded-lg overflow-hidden mb-8 shadow-lg transition-all duration-700 delay-100 ${
-          mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-        }`}
-      >
-        <Image
-          src={deal.image}
-          alt={deal.address}
-          fill
-          className="object-cover"
-          sizes="100vw"
-          priority
+      {/* Hero Section - Split: Image & Map */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Left: Property Image */}
+        <div className="relative h-96 lg:h-[500px] bg-gray-200 rounded-lg overflow-hidden shadow-lg">
+          <Image
+            src={deal.heroImage}
+            alt={deal.address}
+            fill
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            priority
+          />
+        </div>
+
+        {/* Right: Map with 2-mile radius */}
+        <PropertyMap
+          center={[deal.lng, deal.lat]}
+          markers={[
+            { lng: deal.lng, lat: deal.lat, label: "Subject Property", color: "#EF4444" },
+          ]}
+          radius={2}
+          className="h-96 lg:h-[500px] rounded-lg shadow-lg"
         />
       </div>
 
-      {/* Property Header */}
-      <div
-        className={`mb-8 transition-all duration-700 delay-200 ${
-          mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-        }`}
-      >
-        <h1 className="text-4xl font-bold text-gray-900 mb-2">
+      {/* Address & Quick Stats */}
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold text-gray-900 mb-3">
           {deal.address}
         </h1>
-        <div className="flex items-center gap-4 text-lg text-gray-600">
-          <span>🛏️ {deal.beds} Beds</span>
-          <span>•</span>
-          <span>🚿 {deal.baths} Baths</span>
-          <span>•</span>
-          <span>📐 {deal.sqft.toLocaleString()} sqft</span>
-          <span>•</span>
-          <span>📅 Built {deal.yearBuilt}</span>
+        <p className="text-lg text-gray-600 mb-4">
+          {deal.city}, {deal.state} {deal.zip}
+        </p>
+        <div className="flex flex-wrap items-center gap-6 text-lg text-gray-700">
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">🛏️</span>
+            <span>{deal.characteristics.beds} Beds</span>
+          </div>
+          <span className="text-gray-300">•</span>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">🚿</span>
+            <span>
+              {deal.characteristics.baths} Baths
+              {deal.characteristics.halfBaths > 0 &&
+                ` + ${deal.characteristics.halfBaths} Half`}
+            </span>
+          </div>
+          <span className="text-gray-300">•</span>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">📐</span>
+            <span>{deal.characteristics.sqft.toLocaleString()} sqft</span>
+          </div>
+          <span className="text-gray-300">•</span>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl">📅</span>
+            <span>Built {deal.characteristics.yearBuilt}</span>
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Details */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Description */}
-          <div
-            className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 transition-all duration-700 delay-300 ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
+        <div className="lg:col-span-2 space-y-8">
+          {/* Property Description */}
+          <section className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Property Description
             </h2>
             <p className="text-gray-700 leading-relaxed">{deal.description}</p>
-          </div>
+          </section>
 
-          {/* Property Specifications */}
-          <div
-            className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 transition-all duration-700 delay-400 ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Property Specifications
+          {/* Property Characteristics */}
+          <section className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              Property Characteristics
             </h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-1">Bedrooms</p>
-                <p className="text-xl font-bold text-gray-900">{deal.beds}</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {deal.characteristics.beds}
+                </p>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-1">Bathrooms</p>
-                <p className="text-xl font-bold text-gray-900">{deal.baths}</p>
+                <p className="text-sm text-gray-600 mb-1">Full Baths</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {deal.characteristics.baths}
+                </p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Half Baths</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {deal.characteristics.halfBaths}
+                </p>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-1">Square Feet</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {deal.sqft.toLocaleString()}
+                  {deal.characteristics.sqft.toLocaleString()}
                 </p>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-1">Year Built</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {deal.yearBuilt}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Rehab Details */}
-          <div
-            className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 transition-all duration-700 delay-500 ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Rehab Details
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-1">Roof Age</p>
-                <p className="text-xl font-bold text-gray-900">
-                  {deal.roofAge} {deal.roofAge === 1 ? "year" : "years"}
+                  {deal.characteristics.yearBuilt}
                 </p>
               </div>
               <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-1">HVAC Age</p>
+                <p className="text-sm text-gray-600 mb-1">Home Type</p>
                 <p className="text-xl font-bold text-gray-900">
-                  {deal.hvacAge} {deal.hvacAge === 1 ? "year" : "years"}
+                  {deal.characteristics.homeType}
                 </p>
               </div>
-              <div className="p-4 bg-gray-50 rounded-lg col-span-2">
-                <p className="text-sm text-gray-600 mb-1">
-                  Foundation Repair Needed
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Garage Size</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {deal.characteristics.garageSize}
                 </p>
-                <p
-                  className={`text-xl font-bold ${
-                    deal.foundationRepair ? "text-red-600" : "text-green-600"
-                  }`}
-                >
-                  {deal.foundationRepair ? "Yes" : "No"}
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Garage Attached</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {deal.characteristics.garageAttached ? "Yes" : "No"}
+                </p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-1">Lot Size</p>
+                <p className="text-xl font-bold text-gray-900">
+                  {deal.characteristics.lotSize}
                 </p>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Dropbox Link */}
-          <div
-            className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 transition-all duration-700 delay-600 ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Property Photos
-            </h2>
-            <a
-              href={deal.dropboxLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-slate-900 to-blue-900 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md"
+          {/* Rehab Section */}
+          <section className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Rehab</h2>
+
+            {/* Condition Pill */}
+            <div className="mb-6">
+              <p className="text-sm text-gray-600 mb-2">Condition of House</p>
+              <div
+                className={`inline-block px-4 py-2 rounded-full border font-medium ${getConditionColor(
+                  deal.rehab.condition
+                )}`}
+              >
+                {deal.rehab.condition}
+              </div>
+            </div>
+
+            {/* Rehab Details Grid */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Rehab Details
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">HVAC Age</p>
+                  <p className="text-lg font-bold text-gray-900">
+                    {deal.rehab.hvacAge} years
+                  </p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Roof Age</p>
+                  <p className="text-lg font-bold text-gray-900">
+                    {deal.rehab.roofAge} years
+                  </p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg col-span-1 md:col-span-2">
+                  <p className="text-sm text-gray-600 mb-1">Foundation</p>
+                  <p className="text-sm text-gray-700">
+                    {deal.rehab.foundationNotes}
+                  </p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg col-span-1 md:col-span-2">
+                  <p className="text-sm text-gray-600 mb-1">Electrical</p>
+                  <p className="text-sm text-gray-700">
+                    {deal.rehab.electricalNotes}
+                  </p>
+                </div>
+                <div className="p-4 bg-gray-50 rounded-lg col-span-1 md:col-span-2">
+                  <p className="text-sm text-gray-600 mb-1">Plumbing</p>
+                  <p className="text-sm text-gray-700">
+                    {deal.rehab.plumbingNotes}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Estimated Rehab Total */}
+            <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-sm text-gray-600 mb-1">Estimated Rehab Total</p>
+              <p className="text-2xl font-bold text-blue-600">
+                {formatPrice(deal.rehab.estimatedRehabTotal)}
+              </p>
+            </div>
+
+            {/* Contractor Button */}
+            <button
+              onClick={() => setShowContractorModal(true)}
+              className="w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md"
             >
-              <span>📁</span>
-              View Photos on Dropbox
-            </a>
-          </div>
+              Work with one of your verified contractors?
+            </button>
+          </section>
+
+          {/* Comparables Section */}
+          <section className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Comparables</h2>
+
+            {/* Comparables Table */}
+            <div className="overflow-x-auto mb-6">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Address
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Beds
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Baths
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Sqft
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Year
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Garage
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Lot Size
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Notes
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {deal.comparables.map((comp) => (
+                    <tr key={comp.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium text-gray-900">
+                        {comp.address}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">{comp.beds}</td>
+                      <td className="px-4 py-3 text-gray-700">{comp.baths}</td>
+                      <td className="px-4 py-3 text-gray-700">
+                        {comp.sqft.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">{comp.yearBuilt}</td>
+                      <td className="px-4 py-3 text-gray-700">{comp.garageSize}</td>
+                      <td className="px-4 py-3 text-gray-700">{comp.lotSize}</td>
+                      <td className="px-4 py-3 text-gray-600 text-xs">
+                        {comp.notes}
+                      </td>
+                    </tr>
+                  ))}
+                  {/* Averages Row */}
+                  {comparableAverages && (
+                    <tr className="bg-blue-50 font-bold">
+                      <td className="px-4 py-3 text-gray-900">Averages</td>
+                      <td className="px-4 py-3 text-gray-900">
+                        {comparableAverages.beds.toFixed(1)}
+                      </td>
+                      <td className="px-4 py-3 text-gray-900">
+                        {comparableAverages.baths.toFixed(1)}
+                      </td>
+                      <td className="px-4 py-3 text-gray-900">
+                        {comparableAverages.sqft.toLocaleString()}
+                      </td>
+                      <td className="px-4 py-3 text-gray-900">
+                        {comparableAverages.yearBuilt}
+                      </td>
+                      <td className="px-4 py-3 text-gray-900">
+                        {comparableAverages.garageSize}
+                      </td>
+                      <td className="px-4 py-3 text-gray-900">
+                        {comparableAverages.lotSize}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600 text-xs">
+                        {comparableAverages.notes}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Comparables Map */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Subject & Comps Location
+              </h3>
+              <PropertyMap
+                center={[deal.lng, deal.lat]}
+                markers={[
+                  {
+                    lng: deal.lng,
+                    lat: deal.lat,
+                    label: "Subject",
+                    color: "#EF4444",
+                  },
+                  ...deal.comparables.map((comp) => ({
+                    lng: comp.lng,
+                    lat: comp.lat,
+                    label: comp.address,
+                    color: "#3B82F6",
+                  })),
+                ]}
+                className="h-96 rounded-lg shadow-md"
+              />
+            </div>
+
+            {/* Comparable Photo Galleries */}
+            <div className="space-y-8">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Comparable Condition Photos
+              </h3>
+              {deal.comparables.map((comp) => (
+                <div key={comp.id} className="border-t border-gray-200 pt-6">
+                  <h4 className="text-md font-semibold text-gray-800 mb-4">
+                    {comp.address}
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {comp.images.map((image, idx) => (
+                      <div
+                        key={idx}
+                        className="relative h-48 bg-gray-200 rounded-lg overflow-hidden"
+                      >
+                        <Image
+                          src={image}
+                          alt={`${comp.address} - Photo ${idx + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 50vw, 33vw"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
 
-        {/* Right Column - Financial Calculator */}
+        {/* Right Column - Profit Calculator (Sticky) */}
         <div className="lg:col-span-1">
-          <div
-            className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 sticky top-8 transition-all duration-700 delay-700 ${
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
+          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 sticky top-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">
               Profit Calculator
             </h2>
 
-            {/* Financial Breakdown */}
-            <div className="space-y-4 mb-6">
+            <div className="space-y-4">
+              {/* Purchase Price (Read-only) */}
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-1">Purchase Price</p>
                 <p className="text-2xl font-bold text-gray-900">
@@ -328,39 +454,46 @@ export default function DealDetailPage() {
                 </p>
               </div>
 
+              {/* ARV (Editable) */}
               <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm text-gray-600 mb-1">
-                  After Repair Value (ARV)
-                </p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {formatPrice(deal.arv)}
-                </p>
-              </div>
-
-              {/* Rehab Cost Input */}
-              <div className="p-4 bg-gray-50 rounded-lg">
                 <label
-                  htmlFor="rehabCost"
-                  className="text-sm text-gray-600 mb-2 block"
+                  htmlFor="arv"
+                  className="block text-sm text-gray-600 mb-2"
                 >
-                  Estimated Rehab Cost
+                  After Repair Value (ARV)
                 </label>
                 <input
-                  id="rehabCost"
+                  id="arv"
                   type="number"
-                  value={rehabCost}
-                  onChange={(e) => setRehabCost(e.target.value)}
-                  placeholder="Enter rehab cost"
+                  value={arv}
+                  onChange={(e) => setArv(Number(e.target.value))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg font-semibold"
+                />
+              </div>
+
+              {/* Estimated Rehab (Editable) */}
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <label
+                  htmlFor="rehab"
+                  className="block text-sm text-gray-600 mb-2"
+                >
+                  Estimated Rehab
+                </label>
+                <input
+                  id="rehab"
+                  type="number"
+                  value={estimatedRehab}
+                  onChange={(e) => setEstimatedRehab(Number(e.target.value))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-lg font-semibold"
                 />
               </div>
             </div>
 
-            {/* Profit Calculation */}
-            <div className="border-t border-gray-200 pt-6">
+            {/* Profit Display */}
+            <div className="mt-6 border-t border-gray-200 pt-6">
               <div
                 className={`p-6 rounded-lg transition-all duration-300 ${
-                  potentialProfit > 0
+                  calculateProfit() > 0
                     ? "bg-gradient-to-r from-green-500 to-emerald-500"
                     : "bg-gradient-to-r from-gray-400 to-gray-500"
                 }`}
@@ -369,11 +502,10 @@ export default function DealDetailPage() {
                   Potential Profit (98% of net)
                 </p>
                 <p className="text-4xl font-bold text-white">
-                  {formatPrice(potentialProfit)}
+                  {formatPrice(calculateProfit())}
                 </p>
               </div>
 
-              {/* Formula Explanation */}
               <div className="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-gray-600">
                 <p className="font-semibold mb-2">Formula:</p>
                 <p className="font-mono text-xs">
@@ -384,6 +516,45 @@ export default function DealDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Contractor Modal */}
+      {showContractorModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowContractorModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg shadow-2xl max-w-md w-full p-8 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowContractorModal(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
+            >
+              ×
+            </button>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-3xl">🛠️</span>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Verified Contractors
+              </h3>
+              <p className="text-gray-600 mb-6">
+                We'll connect you with one of our verified contractors who can
+                provide a detailed estimate for this property.
+              </p>
+              <button
+                onClick={() => setShowContractorModal(false)}
+                className="w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300"
+              >
+                Request Contractor Contact
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
