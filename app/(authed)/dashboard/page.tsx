@@ -2,12 +2,57 @@
 
 import { useEffect, useState } from "react";
 
+// Metro and County Data Structure
+const METRO_COUNTIES = {
+  "DFW Metroplex": [
+    "Dallas County",
+    "Tarrant County",
+    "Collin County",
+    "Denton County",
+    "Rockwall County",
+    "Kaufman County",
+    "Ellis County",
+    "Johnson County",
+    "Parker County",
+    "Wise County",
+    "Hood County",
+  ],
+  "Austin Metro": [
+    "Travis County",
+    "Williamson County",
+    "Hays County",
+    "Bastrop County",
+    "Caldwell County",
+  ],
+  "San Antonio Metro": [
+    "Bexar County",
+    "Comal County",
+    "Guadalupe County",
+    "Wilson County",
+    "Medina County",
+    "Kendall County",
+    "Atascosa County",
+  ],
+  "Houston Metro": [
+    "Harris County",
+    "Fort Bend County",
+    "Montgomery County",
+    "Brazoria County",
+    "Galveston County",
+    "Chambers County",
+    "Liberty County",
+    "Waller County",
+    "Austin County",
+  ],
+};
+
 export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
 
   // Investment Preferences State
-  const [locations, setLocations] = useState<string[]>([]);
-  const [locationInput, setLocationInput] = useState("");
+  const [selectedCounties, setSelectedCounties] = useState<string[]>([]);
+  const [expandedMetros, setExpandedMetros] = useState<string[]>([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [assetClass, setAssetClass] = useState("");
   const [priceRange, setPriceRange] = useState("");
   const [capitalType, setCapitalType] = useState("");
@@ -111,15 +156,51 @@ export default function DashboardPage() {
     setMounted(true);
   }, []);
 
-  const addLocation = () => {
-    if (locationInput.trim() && !locations.includes(locationInput.trim())) {
-      setLocations([...locations, locationInput.trim()]);
-      setLocationInput("");
+  const toggleMetro = (metro: string) => {
+    setExpandedMetros((prev) =>
+      prev.includes(metro) ? prev.filter((m) => m !== metro) : [...prev, metro]
+    );
+  };
+
+  const selectEntireMetro = (metro: string) => {
+    const counties = METRO_COUNTIES[metro as keyof typeof METRO_COUNTIES];
+    const allSelected = counties.every((c) => selectedCounties.includes(c));
+
+    if (allSelected) {
+      // Deselect all counties in this metro
+      setSelectedCounties((prev) => prev.filter((c) => !counties.includes(c)));
+    } else {
+      // Select all counties in this metro
+      setSelectedCounties((prev) => [
+        ...prev.filter((c) => !counties.includes(c)),
+        ...counties,
+      ]);
     }
   };
 
-  const removeLocation = (location: string) => {
-    setLocations(locations.filter((l) => l !== location));
+  const toggleCounty = (county: string) => {
+    setSelectedCounties((prev) =>
+      prev.includes(county)
+        ? prev.filter((c) => c !== county)
+        : [...prev, county]
+    );
+  };
+
+  const removeCounty = (county: string) => {
+    setSelectedCounties((prev) => prev.filter((c) => c !== county));
+  };
+
+  const isMetroFullySelected = (metro: string) => {
+    const counties = METRO_COUNTIES[metro as keyof typeof METRO_COUNTIES];
+    return counties.every((c) => selectedCounties.includes(c));
+  };
+
+  const isMetroPartiallySelected = (metro: string) => {
+    const counties = METRO_COUNTIES[metro as keyof typeof METRO_COUNTIES];
+    return (
+      counties.some((c) => selectedCounties.includes(c)) &&
+      !isMetroFullySelected(metro)
+    );
   };
 
   const formatPrice = (price: number) => {
@@ -133,7 +214,7 @@ export default function DashboardPage() {
   const handleSavePreferences = () => {
     // TODO: Save preferences to Salesforce API
     const preferences = {
-      counties: locations,
+      counties: selectedCounties,
       assetClass,
       priceRange,
       capitalType,
@@ -176,48 +257,140 @@ export default function DashboardPage() {
         </div>
 
         <div className="space-y-6">
-          {/* County Preferences */}
+          {/* County Preferences with Metro Dropdown */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               County Preferences
             </label>
-            <div className="flex gap-2 mb-3">
-              <input
-                type="text"
-                value={locationInput}
-                onChange={(e) => setLocationInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    addLocation();
-                  }
-                }}
-                placeholder="Search counties..."
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+
+            {/* Dropdown Trigger */}
+            <div className="relative">
               <button
-                onClick={addLocation}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                type="button"
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-left flex items-center justify-between"
               >
-                Add
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {locations.map((location) => (
-                <div
-                  key={location}
-                  className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-sm font-medium"
+                <span className="text-gray-700">
+                  {selectedCounties.length === 0
+                    ? "Select counties or metros..."
+                    : `${selectedCounties.length} county(ies) selected`}
+                </span>
+                <svg
+                  className={`w-5 h-5 transition-transform ${
+                    dropdownOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <span>{location}</span>
-                  <button
-                    onClick={() => removeLocation(location)}
-                    className="text-blue-600 hover:text-blue-800 font-bold"
-                  >
-                    ×
-                  </button>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              {dropdownOpen && (
+                <div className="absolute z-10 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg max-h-96 overflow-y-auto">
+                  {Object.entries(METRO_COUNTIES).map(([metro, counties]) => (
+                    <div key={metro} className="border-b border-gray-200 last:border-b-0">
+                      {/* Metro Header */}
+                      <div className="flex items-center justify-between p-3 hover:bg-gray-50">
+                        <div className="flex items-center gap-2 flex-1">
+                          <button
+                            type="button"
+                            onClick={() => toggleMetro(metro)}
+                            className="text-gray-500 hover:text-gray-700"
+                          >
+                            <svg
+                              className={`w-4 h-4 transition-transform ${
+                                expandedMetros.includes(metro) ? "rotate-90" : ""
+                              }`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 5l7 7-7 7"
+                              />
+                            </svg>
+                          </button>
+                          <span className="font-semibold text-gray-900">
+                            {metro}
+                          </span>
+                          {isMetroPartiallySelected(metro) && (
+                            <span className="text-xs text-blue-600">
+                              (partial)
+                            </span>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => selectEntireMetro(metro)}
+                          className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                            isMetroFullySelected(metro)
+                              ? "bg-blue-600 text-white"
+                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                        >
+                          {isMetroFullySelected(metro)
+                            ? "Deselect All"
+                            : "Select All"}
+                        </button>
+                      </div>
+
+                      {/* Counties List */}
+                      {expandedMetros.includes(metro) && (
+                        <div className="bg-gray-50 px-3 py-2">
+                          {counties.map((county) => (
+                            <label
+                              key={county}
+                              className="flex items-center gap-2 py-2 px-3 hover:bg-white rounded cursor-pointer"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedCounties.includes(county)}
+                                onChange={() => toggleCounty(county)}
+                                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                              />
+                              <span className="text-sm text-gray-700">
+                                {county}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
+
+            {/* Selected Counties Pills */}
+            {selectedCounties.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {selectedCounties.map((county) => (
+                  <div
+                    key={county}
+                    className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-sm font-medium"
+                  >
+                    <span>{county}</span>
+                    <button
+                      onClick={() => removeCounty(county)}
+                      className="text-blue-600 hover:text-blue-800 font-bold"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Asset Class Preference */}
