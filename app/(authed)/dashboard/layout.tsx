@@ -10,6 +10,7 @@ export default function DashboardLayout({
     { name: "Dashboard", href: "/dashboard" },
     { name: "Available Deals", href: "/dashboard/deals" },
     { name: "Docs", href: "/dashboard/documents" },
+    { name: "Settings", href: "/dashboard/settings" },
   ];
 
   return (
