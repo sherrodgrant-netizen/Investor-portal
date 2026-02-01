@@ -2,8 +2,8 @@ import Image from "next/image";
 
 export default function AccessPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-xl p-8 text-center">
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-lg shadow-xl p-8 text-center border border-gray-200">
         <div className="flex justify-center mb-6">
           <Image
             src="/diamond logo.svg"
@@ -25,16 +25,16 @@ export default function AccessPage() {
         <div className="space-y-4">
           <a
             href="/login"
-            className="block w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md"
+            className="block w-full bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-md"
           >
             Sign In
           </a>
 
           <a
-            href="/request-access"
-            className="block w-full bg-white text-blue-600 py-3 px-6 rounded-lg font-medium border-2 border-blue-600 hover:bg-blue-50 transition-all duration-300"
+            href="/signup"
+            className="block w-full bg-white text-black py-3 px-6 rounded-lg font-semibold border-2 border-black hover:bg-gray-50 transition-all duration-300"
           >
-            Request Access
+            Sign Up
           </a>
         </div>
 
@@ -43,7 +43,7 @@ export default function AccessPage() {
             For assistance, contact us at{" "}
             <a
               href="mailto:support@diamondacquisitions.com"
-              className="text-blue-600 hover:underline"
+              className="text-black hover:underline font-medium"
             >
               support@diamondacquisitions.com
             </a>
