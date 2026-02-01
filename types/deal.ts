@@ -33,6 +33,7 @@ export interface Comparable {
   yearBuilt: number;
   garageSize: string;
   lotSize: string;
+  salePrice: number; // Comparable sale price
   notes: string;
   lat: number;
   lng: number;
