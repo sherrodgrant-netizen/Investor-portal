@@ -322,7 +322,7 @@ export default function DashboardPage() {
             </h4>
             <div className="flex gap-4">
               <div className="flex-shrink-0">
-                <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 ring-4 ring-blue-200">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 ring-4 ring-gray-300">
                   <img
                     src={investorProfile.salesAdvisor.photo}
                     alt={investorProfile.salesAdvisor.name}
@@ -342,7 +342,7 @@ export default function DashboardPage() {
                     <span className="text-gray-500">📧</span>
                     <a
                       href={`mailto:${investorProfile.salesAdvisor.email}`}
-                      className="text-blue-600 hover:text-blue-800 hover:underline text-sm"
+                      className="text-black hover:text-gray-700 hover:underline text-sm"
                     >
                       {investorProfile.salesAdvisor.email}
                     </a>
@@ -351,7 +351,7 @@ export default function DashboardPage() {
                     <span className="text-gray-500">📞</span>
                     <a
                       href={`tel:${investorProfile.salesAdvisor.phone}`}
-                      className="text-blue-600 hover:text-blue-800 hover:underline text-sm"
+                      className="text-black hover:text-gray-700 hover:underline text-sm"
                     >
                       {investorProfile.salesAdvisor.phone}
                     </a>
@@ -388,7 +388,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-left flex items-center justify-between"
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white text-left flex items-center justify-between"
               >
                 <span className="text-gray-700">
                   {selectedCounties.length === 0
@@ -445,7 +445,7 @@ export default function DashboardPage() {
                             {metro}
                           </span>
                           {isMetroPartiallySelected(metro) && (
-                            <span className="text-xs text-blue-600">
+                            <span className="text-xs text-black">
                               (partial)
                             </span>
                           )}
@@ -455,7 +455,7 @@ export default function DashboardPage() {
                           onClick={() => selectEntireMetro(metro)}
                           className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
                             isMetroFullySelected(metro)
-                              ? "bg-blue-600 text-white"
+                              ? "bg-black text-white"
                               : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                           }`}
                         >
@@ -477,7 +477,7 @@ export default function DashboardPage() {
                                 type="checkbox"
                                 checked={selectedCounties.includes(county)}
                                 onChange={() => toggleCounty(county)}
-                                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                                className="w-4 h-4 text-black rounded focus:ring-2 focus:ring-gray-500"
                               />
                               <span className="text-sm text-gray-700">
                                 {county}
@@ -498,12 +498,12 @@ export default function DashboardPage() {
                 {selectedCounties.map((county) => (
                   <div
                     key={county}
-                    className="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-sm font-medium"
+                    className="flex items-center gap-2 bg-gray-100 text-gray-800 px-3 py-1.5 rounded-full text-sm font-medium"
                   >
                     <span>{county}</span>
                     <button
                       onClick={() => removeCounty(county)}
-                      className="text-blue-600 hover:text-blue-800 font-bold"
+                      className="text-black hover:text-gray-700 font-bold"
                     >
                       ×
                     </button>
@@ -521,7 +521,7 @@ export default function DashboardPage() {
             <select
               value={assetClass}
               onChange={(e) => setAssetClass(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white text-gray-900"
             >
               <option value="">Select asset class...</option>
               {assetClassOptions.map((option) => (
@@ -540,7 +540,7 @@ export default function DashboardPage() {
             <select
               value={priceRange}
               onChange={(e) => setPriceRange(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 font-semibold"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white text-gray-900 font-semibold"
               style={{ color: priceRange ? '#059669' : '#111827' }}
             >
               <option value="" style={{ color: '#6B7280' }}>Select price range...</option>
@@ -560,7 +560,7 @@ export default function DashboardPage() {
             <select
               value={capitalType}
               onChange={(e) => setCapitalType(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white text-gray-900"
             >
               <option value="">Select capital type...</option>
               {capitalTypeOptions.map((option) => (
@@ -579,7 +579,7 @@ export default function DashboardPage() {
             <select
               value={investSolo}
               onChange={(e) => setInvestSolo(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white text-gray-900"
             >
               <option value="">Select...</option>
               <option value="solo">Solo</option>
@@ -597,7 +597,7 @@ export default function DashboardPage() {
               onChange={(e) => setAdditionalNotes(e.target.value)}
               rows={4}
               placeholder="Share any additional preferences or requirements..."
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent resize-none"
             />
           </div>
 
@@ -609,7 +609,7 @@ export default function DashboardPage() {
             <select
               value={notificationPref}
               onChange={(e) => setNotificationPref(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white text-gray-900"
             >
               <option value="">Select notification preference...</option>
               <option value="matched">
@@ -623,7 +623,7 @@ export default function DashboardPage() {
           <div className="pt-4">
             <button
               onClick={handleSavePreferences}
-              className="w-full md:w-auto px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-blue-900 transition-all shadow-md hover:shadow-lg"
+              className="w-full md:w-auto px-8 py-3 bg-black text-white rounded-lg font-semibold hover:bg-gray-800 transition-all shadow-md hover:shadow-lg"
             >
               Save Preferences
             </button>

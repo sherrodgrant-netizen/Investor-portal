@@ -85,7 +85,7 @@ export default function DealDetailPage() {
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Deal not found</h2>
         <Link
           href="/dashboard/deals"
-          className="text-blue-600 hover:text-blue-800 underline"
+          className="text-black hover:text-gray-700 underline"
         >
           Back to Available Deals
         </Link>
@@ -156,7 +156,7 @@ export default function DealDetailPage() {
       <div className="mb-6">
         <Link
           href="/dashboard/deals"
-          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium transition-colors"
+          className="inline-flex items-center gap-2 text-black hover:text-gray-700 font-medium transition-colors"
         >
           <span>←</span> Back to Available Deals
         </Link>
@@ -362,7 +362,7 @@ export default function DealDetailPage() {
             {/* Contractor Button */}
             <button
               onClick={() => setShowContractorModal(true)}
-              className="w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md"
+              className="w-full bg-black text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-md"
             >
               Work with one of your verified contractors?
             </button>
@@ -424,7 +424,7 @@ export default function DealDetailPage() {
                   ))}
                   {/* Averages Row */}
                   {comparableAverages && (
-                    <tr className="bg-blue-50 font-bold">
+                    <tr className="bg-gray-100 font-bold">
                       <td className="px-4 py-3 text-gray-900">Averages</td>
                       <td className="px-4 py-3 text-gray-900">
                         {comparableAverages.beds.toFixed(1)}
@@ -516,7 +516,7 @@ export default function DealDetailPage() {
             {/* CTA Above Calculator */}
             <button
               onClick={() => setShowAdvisorModal(true)}
-              className="w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md"
+              className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-md"
             >
               Click for More Info
             </button>
@@ -750,7 +750,7 @@ export default function DealDetailPage() {
             </button>
 
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-3xl">🛠️</span>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-4">
@@ -762,7 +762,7 @@ export default function DealDetailPage() {
               </p>
               <button
                 onClick={() => setShowContractorModal(false)}
-                className="w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300"
+                className="w-full bg-black text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-all duration-300"
               >
                 Request Contractor Contact
               </button>
@@ -791,7 +791,7 @@ export default function DealDetailPage() {
 
             {/* Success Icon */}
             <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-slate-600 rounded-full flex items-center justify-center">
+              <div className="w-16 h-16 bg-black rounded-full flex items-center justify-center">
                 <span className="text-3xl text-white">💎</span>
               </div>
             </div>
@@ -805,18 +805,18 @@ export default function DealDetailPage() {
             </p>
 
             {/* Sales Advisor Card */}
-            <div className="bg-gradient-to-r from-blue-50 to-slate-50 rounded-lg p-6 mb-6 border border-blue-200">
+            <div className="bg-gray-50 rounded-lg p-6 mb-6 border border-gray-200">
               {/* Advisor Photo */}
               <div className="flex justify-center mb-4">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 ring-4 ring-blue-300">
+                  <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 ring-4 ring-gray-300">
                     <img
                       src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80"
                       alt="Sarah Johnson"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full border-4 border-white"></div>
+                  <div className="absolute bottom-0 right-0 w-6 h-6 bg-gray-400 rounded-full border-4 border-white"></div>
                 </div>
               </div>
 
@@ -832,7 +832,7 @@ export default function DealDetailPage() {
                   <span>📧</span>
                   <a
                     href="mailto:sarah.johnson@diamondacquisitions.com"
-                    className="text-blue-600 hover:underline"
+                    className="text-black hover:underline"
                   >
                     sarah.johnson@diamondacquisitions.com
                   </a>
@@ -841,7 +841,7 @@ export default function DealDetailPage() {
                   <span>📞</span>
                   <a
                     href="tel:+15125550123"
-                    className="text-blue-600 hover:underline"
+                    className="text-black hover:underline"
                   >
                     (512) 555-0123
                   </a>
@@ -853,13 +853,13 @@ export default function DealDetailPage() {
             <div className="space-y-3">
               <a
                 href="tel:+15125550123"
-                className="block w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-6 rounded-lg font-medium hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-md text-center"
+                className="block w-full bg-black text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-md text-center"
               >
                 📞 Call Now
               </a>
               <a
                 href="mailto:sarah.johnson@diamondacquisitions.com"
-                className="block w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md text-center"
+                className="block w-full bg-gray-800 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 shadow-md text-center"
               >
                 📧 Email Advisor
               </a>

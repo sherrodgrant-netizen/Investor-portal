@@ -203,9 +203,9 @@ export default function DealsPage() {
                 disabled={!hasDeals && category !== "All Deals"}
                 className={`flex-shrink-0 px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-300 transform relative overflow-hidden group ${
                   isActive
-                    ? "bg-gradient-to-r from-slate-900 to-blue-900 text-white shadow-lg scale-105"
+                    ? "bg-black text-white shadow-lg scale-105"
                     : hasDeals
-                    ? "bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-500 hover:shadow-md hover:scale-102"
+                    ? "bg-white text-gray-700 border-2 border-gray-200 hover:border-black hover:shadow-md hover:scale-102"
                     : "bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed opacity-50"
                 }`}
               >
@@ -216,14 +216,14 @@ export default function DealsPage() {
 
                 <div className="relative z-10">
                   <div className="font-bold">{category}</div>
-                  <div className={`text-xs ${isActive ? "text-blue-200" : "text-gray-500"}`}>
+                  <div className={`text-xs ${isActive ? "text-gray-200" : "text-gray-500"}`}>
                     {count} {count === 1 ? "deal" : "deals"}
                   </div>
                 </div>
 
                 {/* Active indicator */}
                 {isActive && (
-                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-400 to-orange-400"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-white"></div>
                 )}
               </button>
             );
@@ -241,11 +241,11 @@ export default function DealsPage() {
           {/* Map Toggle Header */}
           <button
             onClick={() => setShowMap(!showMap)}
-            className="w-full px-6 py-4 bg-gradient-to-r from-slate-900 to-blue-900 text-white flex items-center justify-between hover:from-blue-900 hover:to-slate-900 transition-all duration-300 group"
+            className="w-full px-6 py-4 bg-black text-white flex items-center justify-between hover:bg-gray-800 transition-all duration-300 group"
           >
             <div className="text-left">
               <div className="font-bold text-lg">Deal Locations Map</div>
-              <div className="text-sm text-blue-200">
+              <div className="text-sm text-gray-200">
                 {showMap ? "Click to hide" : `Click to view ${filteredDeals.length} ${filteredDeals.length === 1 ? "property" : "properties"} on map`}
               </div>
             </div>
@@ -275,23 +275,23 @@ export default function DealsPage() {
                   lng: deal.lng,
                   lat: deal.lat,
                   label: deal.address,
-                  color: deal.homeType === "Single Family" ? "#3B82F6" : deal.homeType === "Multi Family" ? "#8B5CF6" : "#10B981",
+                  color: deal.homeType === "Single Family" ? "#000000" : deal.homeType === "Multi Family" ? "#4B5563" : "#9CA3AF",
                 }))}
                 className="h-80 w-full"
               />
-              <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-slate-50 border-t-2 border-gray-200">
+              <div className="px-6 py-4 bg-gray-50 border-t-2 border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="flex gap-4 text-sm">
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-black"></div>
                       <span className="text-gray-700">Single Family</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-gray-600"></div>
                       <span className="text-gray-700">Multi Family</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      <div className="w-3 h-3 rounded-full bg-gray-400"></div>
                       <span className="text-gray-700">Commercial/Land</span>
                     </div>
                   </div>
@@ -338,7 +338,7 @@ export default function DealsPage() {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
               {/* New badge */}
-              <div className="absolute top-3 right-3 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+              <div className="absolute top-3 right-3 bg-black text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
                 NEW
               </div>
             </div>
@@ -346,7 +346,7 @@ export default function DealsPage() {
             {/* Property Details */}
             <div className="p-5">
               {/* Address */}
-              <h3 className="font-semibold text-lg text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+              <h3 className="font-semibold text-lg text-gray-900 mb-3 group-hover:text-black transition-colors">
                 {deal.address}
               </h3>
 
@@ -377,7 +377,7 @@ export default function DealsPage() {
               {/* Purchase Price */}
               <div className="mb-4 pt-3 border-t border-gray-200">
                 <p className="text-sm text-gray-600 mb-1">Purchase Price</p>
-                <p className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-blue-600 bg-clip-text text-transparent">
+                <p className="text-2xl font-bold text-black">
                   {formatPrice(deal.purchasePrice)}
                 </p>
               </div>
@@ -385,7 +385,7 @@ export default function DealsPage() {
               {/* More Info Button */}
               <Link
                 href={`/dashboard/deals/${deal.id}`}
-                className="block w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-2.5 px-4 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-xl text-center"
+                className="block w-full bg-black text-white py-2.5 px-4 rounded-lg font-medium hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-xl text-center"
               >
                 Click for More Info
               </Link>
@@ -424,14 +424,14 @@ export default function DealsPage() {
             {/* Sales Agent Photo with ring animation */}
             <div className="flex justify-center mb-6">
               <div className="relative">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 ring-4 ring-blue-300 animate-pulse">
+                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 ring-4 ring-gray-300 animate-pulse">
                   <img
                     src={salesAgent.photo}
                     alt={salesAgent.name}
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div className="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-4 border-white"></div>
+                <div className="absolute bottom-0 right-0 w-8 h-8 bg-gray-400 rounded-full border-4 border-white"></div>
               </div>
             </div>
 
@@ -445,7 +445,7 @@ export default function DealsPage() {
               </p>
 
               {/* Agent Info with gradient background */}
-              <div className="bg-gradient-to-r from-blue-50 to-slate-50 rounded-lg p-4 mb-6 border border-blue-200">
+              <div className="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
                 <p className="font-semibold text-gray-900 mb-2">
                   {salesAgent.name}
                 </p>
@@ -456,7 +456,7 @@ export default function DealsPage() {
               {/* Close Button */}
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-2.5 px-4 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md"
+                className="w-full bg-black text-white py-2.5 px-4 rounded-lg font-medium hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-md"
               >
                 Close
               </button>

@@ -15,7 +15,7 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-slate-900 text-white shadow-lg">
+      <header className="bg-black text-white shadow-lg">
         <div className="px-6 py-4 flex items-center gap-3">
           <Image
             src="/diamond logo.svg"
@@ -38,7 +38,7 @@ export default function DashboardLayout({
               <li key={item.name}>
                 <Link
                   href={item.href}
-                  className="block py-4 text-gray-700 font-medium hover:text-blue-600 border-b-2 border-transparent hover:border-blue-600 transition-all"
+                  className="block py-4 text-gray-700 font-medium hover:text-black border-b-2 border-transparent hover:border-black transition-all"
                 >
                   {item.name}
                 </Link>
