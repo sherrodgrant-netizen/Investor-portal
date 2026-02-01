@@ -700,9 +700,9 @@ export default function SignUpPage() {
                 {/* Animated Background Elements */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                   <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-200 rounded-full opacity-20 animate-pulse"></div>
-                  <div className="absolute top-20 right-20 w-16 h-16 bg-yellow-300 rounded-full opacity-30 animate-pulse delay-100"></div>
-                  <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-yellow-100 rounded-full opacity-20 animate-pulse delay-200"></div>
-                  <div className="absolute bottom-10 right-1/3 w-20 h-20 bg-yellow-200 rounded-full opacity-25 animate-pulse delay-300"></div>
+                  <div className="absolute top-20 right-20 w-16 h-16 bg-yellow-300 rounded-full opacity-30 animate-pulse" style={{ animationDelay: '0.1s' }}></div>
+                  <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-yellow-100 rounded-full opacity-20 animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="absolute bottom-10 right-1/3 w-20 h-20 bg-yellow-200 rounded-full opacity-25 animate-pulse" style={{ animationDelay: '0.3s' }}></div>
                 </div>
 
                 {/* Main Content */}
@@ -720,7 +720,7 @@ export default function SignUpPage() {
                       <div className="absolute -top-2 -right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center animate-ping">
                         <span className="text-2xl">✨</span>
                       </div>
-                      <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-white rounded-full flex items-center justify-center animate-ping delay-150">
+                      <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-white rounded-full flex items-center justify-center animate-ping" style={{ animationDelay: '0.15s' }}>
                         <span className="text-xl">⭐</span>
                       </div>
                     </div>
@@ -1093,7 +1093,7 @@ export default function SignUpPage() {
 
                   <div className="p-4 bg-white border-2 border-dashed border-gray-400 rounded-lg mb-6">
                     <p className="text-xs text-gray-500 mb-2">Electronic Signature</p>
-                    <p className="font-signature text-3xl text-gray-900 italic">{firstName} {lastName}</p>
+                    <p className="text-3xl text-gray-900 italic" style={{ fontFamily: 'cursive' }}>{firstName} {lastName}</p>
                     <p className="text-xs text-gray-400 mt-2">IP Address: 192.168.1.xxx | Timestamp: {new Date().toISOString()}</p>
                   </div>
                 </div>
