@@ -277,7 +277,7 @@ export default function DealsPage() {
                   label: deal.address,
                   color: deal.homeType === "Single Family" ? "#3B82F6" : deal.homeType === "Multi Family" ? "#8B5CF6" : "#10B981",
                 }))}
-                className="h-80"
+                className="h-80 w-full"
               />
               <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-slate-50 border-t-2 border-gray-200">
                 <div className="flex items-center justify-between">
