@@ -160,11 +160,11 @@ export default function DashboardPage() {
   ];
 
   const priceRangeOptions = [
-    "Under $250k",
-    "Under $500k",
-    "Under $1M",
-    "$1M+",
-    "No limit",
+    { label: "Under $250k", value: "Under $250k" },
+    { label: "Under $500k", value: "Under $500k" },
+    { label: "Under $1M", value: "Under $1M" },
+    { label: "$1M+", value: "$1M+" },
+    { label: "No limit", value: "No limit" },
   ];
 
   useEffect(() => {
@@ -521,7 +521,7 @@ export default function DashboardPage() {
             <select
               value={assetClass}
               onChange={(e) => setAssetClass(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
             >
               <option value="">Select asset class...</option>
               {assetClassOptions.map((option) => (
@@ -540,12 +540,13 @@ export default function DashboardPage() {
             <select
               value={priceRange}
               onChange={(e) => setPriceRange(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900 font-semibold"
+              style={{ color: priceRange ? '#059669' : '#111827' }}
             >
-              <option value="">Select price range...</option>
+              <option value="" style={{ color: '#6B7280' }}>Select price range...</option>
               {priceRangeOptions.map((option) => (
-                <option key={option} value={option}>
-                  {option}
+                <option key={option.value} value={option.value} style={{ color: '#059669', fontWeight: '600' }}>
+                  {option.label}
                 </option>
               ))}
             </select>
@@ -559,7 +560,7 @@ export default function DashboardPage() {
             <select
               value={capitalType}
               onChange={(e) => setCapitalType(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
             >
               <option value="">Select capital type...</option>
               {capitalTypeOptions.map((option) => (
@@ -571,36 +572,19 @@ export default function DashboardPage() {
           </div>
 
           {/* Partner Information */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Do you invest solo or with partners?
-              </label>
-              <select
-                value={investSolo}
-                onChange={(e) => setInvestSolo(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-              >
-                <option value="">Select...</option>
-                <option value="solo">Solo</option>
-                <option value="partners">With Partners</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Are you open to joint ventures or equity splits?
-              </label>
-              <select
-                value={openToJV}
-                onChange={(e) => setOpenToJV(e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-              >
-                <option value="">Select...</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </select>
-            </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Do you invest solo or with partners?
+            </label>
+            <select
+              value={investSolo}
+              onChange={(e) => setInvestSolo(e.target.value)}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+            >
+              <option value="">Select...</option>
+              <option value="solo">Solo</option>
+              <option value="partners">With Partners</option>
+            </select>
           </div>
 
           {/* Additional Notes */}
@@ -625,7 +609,7 @@ export default function DashboardPage() {
             <select
               value={notificationPref}
               onChange={(e) => setNotificationPref(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
             >
               <option value="">Select notification preference...</option>
               <option value="matched">
