@@ -214,19 +214,10 @@ export default function DealsPage() {
                   <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
                 )}
 
-                <div className="relative z-10 flex items-center gap-2">
-                  <span className="text-lg">
-                    {category === "All Deals" && "🏘️"}
-                    {category === "Single Family" && "🏠"}
-                    {category === "Multi Family" && "🏢"}
-                    {category === "Land" && "🌳"}
-                    {category === "Commercial" && "🏗️"}
-                  </span>
-                  <div>
-                    <div className="font-bold">{category}</div>
-                    <div className={`text-xs ${isActive ? "text-blue-200" : "text-gray-500"}`}>
-                      {count} {count === 1 ? "deal" : "deals"}
-                    </div>
+                <div className="relative z-10">
+                  <div className="font-bold">{category}</div>
+                  <div className={`text-xs ${isActive ? "text-blue-200" : "text-gray-500"}`}>
+                    {count} {count === 1 ? "deal" : "deals"}
                   </div>
                 </div>
 
@@ -252,15 +243,10 @@ export default function DealsPage() {
             onClick={() => setShowMap(!showMap)}
             className="w-full px-6 py-4 bg-gradient-to-r from-slate-900 to-blue-900 text-white flex items-center justify-between hover:from-blue-900 hover:to-slate-900 transition-all duration-300 group"
           >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl group-hover:scale-125 transition-transform">
-                📍
-              </span>
-              <div className="text-left">
-                <div className="font-bold text-lg">Deal Locations Map</div>
-                <div className="text-sm text-blue-200">
-                  {showMap ? "Click to hide" : `Click to view ${filteredDeals.length} ${filteredDeals.length === 1 ? "property" : "properties"} on map`}
-                </div>
+            <div className="text-left">
+              <div className="font-bold text-lg">Deal Locations Map</div>
+              <div className="text-sm text-blue-200">
+                {showMap ? "Click to hide" : `Click to view ${filteredDeals.length} ${filteredDeals.length === 1 ? "property" : "properties"} on map`}
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -327,7 +313,6 @@ export default function DealsPage() {
       >
         {filteredDeals.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-lg shadow-md border border-gray-200">
-            <div className="text-6xl mb-4">🏚️</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">No {selectedCategory} Deals Available</h3>
             <p className="text-gray-600">Check back soon for new opportunities!</p>
           </div>
@@ -367,34 +352,22 @@ export default function DealsPage() {
 
               {/* Property Stats */}
               <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="flex items-center gap-2 group/stat">
-                  <span className="text-gray-600 text-sm group-hover/stat:scale-125 transition-transform">
-                    🛏️
-                  </span>
+                <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-700">
                     {deal.beds} Beds
                   </span>
                 </div>
-                <div className="flex items-center gap-2 group/stat">
-                  <span className="text-gray-600 text-sm group-hover/stat:scale-125 transition-transform">
-                    🚿
-                  </span>
+                <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-700">
                     {deal.baths} Baths
                   </span>
                 </div>
-                <div className="flex items-center gap-2 group/stat">
-                  <span className="text-gray-600 text-sm group-hover/stat:scale-125 transition-transform">
-                    📐
-                  </span>
+                <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-700">
                     {deal.sqft.toLocaleString()} sqft
                   </span>
                 </div>
-                <div className="flex items-center gap-2 group/stat">
-                  <span className="text-gray-600 text-sm group-hover/stat:scale-125 transition-transform">
-                    📅
-                  </span>
+                <div className="flex items-center gap-2">
                   <span className="text-sm text-gray-700">
                     Built {deal.yearBuilt}
                   </span>
