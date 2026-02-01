@@ -20,7 +20,7 @@ export default function AuthedLayout({
       <div className="absolute top-4 right-6 z-50">
         <button
           onClick={handleLogout}
-          className="text-sm text-white bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg transition-colors"
+          className="text-sm text-white bg-black hover:bg-gray-800 px-4 py-2 rounded-lg transition-colors shadow-md"
         >
           Logout
         </button>
