@@ -49,6 +49,21 @@ const METRO_COUNTIES = {
 export default function DashboardPage() {
   const [mounted, setMounted] = useState(false);
 
+  // Investor Profile Data (from Salesforce Contact/Lead)
+  const investorProfile = {
+    firstName: "John",
+    lastName: "Smith",
+    email: "john.smith@example.com",
+    phone: "(512) 555-0199",
+    salesAdvisor: {
+      name: "Sarah Johnson",
+      title: "Senior Investment Advisor",
+      email: "sarah.johnson@diamondacquisitions.com",
+      phone: "(512) 555-0123",
+      photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80",
+    },
+  };
+
   // Investment Preferences State
   const [selectedCounties, setSelectedCounties] = useState<string[]>([]);
   const [expandedMetros, setExpandedMetros] = useState<string[]>([]);
@@ -241,6 +256,111 @@ export default function DashboardPage() {
         <p className="text-gray-600 mt-2">
           Manage your investment preferences and track your portfolio
         </p>
+      </div>
+
+      {/* Investor Profile Section */}
+      <div
+        className={`bg-white rounded-lg shadow-md p-6 border border-gray-200 transition-all duration-700 delay-75 ${
+          mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-2xl font-bold text-gray-900">
+            Investor Profile
+          </h3>
+          <span className="text-3xl">👤</span>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-8">
+          {/* Investor Information */}
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">
+              Your Information
+            </h4>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">
+                    First Name
+                  </label>
+                  <p className="text-gray-900 font-medium">
+                    {investorProfile.firstName}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">
+                    Last Name
+                  </label>
+                  <p className="text-gray-900 font-medium">
+                    {investorProfile.lastName}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Email
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {investorProfile.email}
+                </p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Primary Phone
+                </label>
+                <p className="text-gray-900 font-medium">
+                  {investorProfile.phone}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Sales Advisor Information */}
+          <div>
+            <h4 className="text-lg font-semibold text-gray-900 mb-4">
+              Your Sales Advisor
+            </h4>
+            <div className="flex gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 ring-4 ring-blue-200">
+                  <img
+                    src={investorProfile.salesAdvisor.photo}
+                    alt={investorProfile.salesAdvisor.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+              <div className="flex-1">
+                <p className="text-xl font-bold text-gray-900 mb-1">
+                  {investorProfile.salesAdvisor.name}
+                </p>
+                <p className="text-sm text-gray-600 mb-3">
+                  {investorProfile.salesAdvisor.title}
+                </p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500">📧</span>
+                    <a
+                      href={`mailto:${investorProfile.salesAdvisor.email}`}
+                      className="text-blue-600 hover:text-blue-800 hover:underline text-sm"
+                    >
+                      {investorProfile.salesAdvisor.email}
+                    </a>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500">📞</span>
+                    <a
+                      href={`tel:${investorProfile.salesAdvisor.phone}`}
+                      className="text-blue-600 hover:text-blue-800 hover:underline text-sm"
+                    >
+                      {investorProfile.salesAdvisor.phone}
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Investment Preferences Section */}
