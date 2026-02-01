@@ -2,11 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import PropertyMap from "@/components/PropertyMap";
+
+type PropertyType = "All Deals" | "Single Family" | "Multi Family" | "Land" | "Commercial";
 
 export default function DealsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<PropertyType>("All Deals");
+  const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -28,6 +33,9 @@ export default function DealsPage() {
       roofAge: 6,
       foundationRepair: false,
       hvacAge: 4,
+      homeType: "Single Family" as PropertyType,
+      lat: 30.2672,
+      lng: -97.7431,
     },
     {
       id: 2,
@@ -44,6 +52,9 @@ export default function DealsPage() {
       roofAge: 4,
       foundationRepair: false,
       hvacAge: 3,
+      homeType: "Single Family" as PropertyType,
+      lat: 32.7767,
+      lng: -96.7970,
     },
     {
       id: 3,
@@ -60,6 +71,9 @@ export default function DealsPage() {
       roofAge: 5,
       foundationRepair: true,
       hvacAge: 5,
+      homeType: "Single Family" as PropertyType,
+      lat: 29.7604,
+      lng: -95.3698,
     },
     {
       id: 4,
@@ -76,6 +90,9 @@ export default function DealsPage() {
       roofAge: 3,
       foundationRepair: false,
       hvacAge: 2,
+      homeType: "Multi Family" as PropertyType,
+      lat: 29.4241,
+      lng: -98.4936,
     },
     {
       id: 5,
@@ -92,6 +109,9 @@ export default function DealsPage() {
       roofAge: 2,
       foundationRepair: false,
       hvacAge: 1,
+      homeType: "Single Family" as PropertyType,
+      lat: 32.7555,
+      lng: -97.3308,
     },
     {
       id: 6,
@@ -108,8 +128,28 @@ export default function DealsPage() {
       roofAge: 7,
       foundationRepair: true,
       hvacAge: 8,
+      homeType: "Single Family" as PropertyType,
+      lat: 33.0198,
+      lng: -96.6989,
     },
   ];
+
+  const categories: PropertyType[] = ["All Deals", "Single Family", "Multi Family", "Land", "Commercial"];
+
+  const filteredDeals = useMemo(() => {
+    if (selectedCategory === "All Deals") return deals;
+    return deals.filter((deal) => deal.homeType === selectedCategory);
+  }, [selectedCategory]);
+
+  const categoryStats = useMemo(() => {
+    return {
+      "All Deals": deals.length,
+      "Single Family": deals.filter((d) => d.homeType === "Single Family").length,
+      "Multi Family": deals.filter((d) => d.homeType === "Multi Family").length,
+      "Land": deals.filter((d) => d.homeType === "Land").length,
+      "Commercial": deals.filter((d) => d.homeType === "Commercial").length,
+    };
+  }, []);
 
   const salesAgent = {
     name: "Sarah Johnson",
@@ -134,19 +174,166 @@ export default function DealsPage() {
     <div>
       {/* Page Header with animation */}
       <div
-        className={`mb-8 transition-all duration-700 ${
+        className={`mb-6 transition-all duration-700 ${
           mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
         }`}
       >
         <h2 className="text-3xl font-bold text-gray-900">Available Deals</h2>
         <p className="text-gray-600 mt-2">
-          Browse current investment opportunities
+          {filteredDeals.length} {selectedCategory === "All Deals" ? "total" : selectedCategory.toLowerCase()} {filteredDeals.length === 1 ? "property" : "properties"} available
         </p>
       </div>
 
+      {/* Horizontal Filter Bar */}
+      <div
+        className={`mb-6 transition-all duration-700 delay-100 ${
+          mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+          {categories.map((category) => {
+            const count = categoryStats[category];
+            const isActive = selectedCategory === category;
+            const hasDeals = count > 0;
+
+            return (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                disabled={!hasDeals && category !== "All Deals"}
+                className={`flex-shrink-0 px-6 py-3 rounded-lg font-semibold text-sm transition-all duration-300 transform relative overflow-hidden group ${
+                  isActive
+                    ? "bg-gradient-to-r from-slate-900 to-blue-900 text-white shadow-lg scale-105"
+                    : hasDeals
+                    ? "bg-white text-gray-700 border-2 border-gray-200 hover:border-blue-500 hover:shadow-md hover:scale-102"
+                    : "bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed opacity-50"
+                }`}
+              >
+                {/* Animated background pulse for active category */}
+                {isActive && (
+                  <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+                )}
+
+                <div className="relative z-10 flex items-center gap-2">
+                  <span className="text-lg">
+                    {category === "All Deals" && "🏘️"}
+                    {category === "Single Family" && "🏠"}
+                    {category === "Multi Family" && "🏢"}
+                    {category === "Land" && "🌳"}
+                    {category === "Commercial" && "🏗️"}
+                  </span>
+                  <div>
+                    <div className="font-bold">{category}</div>
+                    <div className={`text-xs ${isActive ? "text-blue-200" : "text-gray-500"}`}>
+                      {count} {count === 1 ? "deal" : "deals"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Active indicator */}
+                {isActive && (
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-yellow-400 to-orange-400"></div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Interactive Map Section */}
+      <div
+        className={`mb-8 transition-all duration-700 delay-200 ${
+          mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
+        <div className="bg-white rounded-lg shadow-lg border-2 border-gray-200 overflow-hidden">
+          {/* Map Toggle Header */}
+          <button
+            onClick={() => setShowMap(!showMap)}
+            className="w-full px-6 py-4 bg-gradient-to-r from-slate-900 to-blue-900 text-white flex items-center justify-between hover:from-blue-900 hover:to-slate-900 transition-all duration-300 group"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl group-hover:scale-125 transition-transform">
+                📍
+              </span>
+              <div className="text-left">
+                <div className="font-bold text-lg">Deal Locations Map</div>
+                <div className="text-sm text-blue-200">
+                  {showMap ? "Click to hide" : `Click to view ${filteredDeals.length} ${filteredDeals.length === 1 ? "property" : "properties"} on map`}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-bold">
+                {filteredDeals.length} Deals
+              </div>
+              <span className={`text-2xl transition-transform duration-300 ${showMap ? "rotate-180" : ""}`}>
+                ▼
+              </span>
+            </div>
+          </button>
+
+          {/* Map Content */}
+          {showMap && (
+            <div className="animate-slideDown">
+              <PropertyMap
+                center={
+                  filteredDeals.length > 0
+                    ? [
+                        filteredDeals.reduce((sum, d) => sum + d.lng, 0) / filteredDeals.length,
+                        filteredDeals.reduce((sum, d) => sum + d.lat, 0) / filteredDeals.length,
+                      ]
+                    : [-97.7431, 30.2672]
+                }
+                markers={filteredDeals.map((deal) => ({
+                  lng: deal.lng,
+                  lat: deal.lat,
+                  label: deal.address,
+                  color: deal.homeType === "Single Family" ? "#3B82F6" : deal.homeType === "Multi Family" ? "#8B5CF6" : "#10B981",
+                }))}
+                className="h-80"
+              />
+              <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-slate-50 border-t-2 border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                      <span className="text-gray-700">Single Family</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                      <span className="text-gray-700">Multi Family</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                      <span className="text-gray-700">Commercial/Land</span>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600 font-medium">
+                    Click markers for property details
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Deals Grid with stagger animation */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {deals.map((deal, index) => (
+      <div
+        className={`transition-all duration-700 delay-300 ${
+          mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
+        {filteredDeals.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-lg shadow-md border border-gray-200">
+            <div className="text-6xl mb-4">🏚️</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No {selectedCategory} Deals Available</h3>
+            <p className="text-gray-600">Check back soon for new opportunities!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredDeals.map((deal, index) => (
           <div
             key={deal.id}
             className={`bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group ${
@@ -232,6 +419,8 @@ export default function DealsPage() {
             </div>
           </div>
         ))}
+          </div>
+        )}
       </div>
 
       {/* Modal with enhanced animations */}
@@ -324,12 +513,27 @@ export default function DealsPage() {
           }
         }
 
+        @keyframes slideDown {
+          from {
+            max-height: 0;
+            opacity: 0;
+          }
+          to {
+            max-height: 1000px;
+            opacity: 1;
+          }
+        }
+
         .animate-fadeIn {
           animation: fadeIn 0.3s ease-out;
         }
 
         .animate-slideUp {
           animation: slideUp 0.4s ease-out;
+        }
+
+        .animate-slideDown {
+          animation: slideDown 0.5s ease-out;
         }
       `}</style>
     </div>
