@@ -696,95 +696,243 @@ export default function SignUpPage() {
 
             {/* Step 4: Confirmation */}
             {currentStep === 4 && (
-              <div className="text-center py-12">
-                <div className="w-24 h-24 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
-                  <span className="text-5xl">💎</span>
+              <div className="relative text-center py-16 px-4 overflow-hidden">
+                {/* Animated Background Elements */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-200 rounded-full opacity-20 animate-pulse"></div>
+                  <div className="absolute top-20 right-20 w-16 h-16 bg-yellow-300 rounded-full opacity-30 animate-pulse delay-100"></div>
+                  <div className="absolute bottom-20 left-1/4 w-24 h-24 bg-yellow-100 rounded-full opacity-20 animate-pulse delay-200"></div>
+                  <div className="absolute bottom-10 right-1/3 w-20 h-20 bg-yellow-200 rounded-full opacity-25 animate-pulse delay-300"></div>
                 </div>
-                <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                  Congratulations on being a Diamond Investor!
-                </h2>
-                <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                  You're now part of an exclusive group with access to premium real estate investment opportunities.
-                </p>
-                <button
-                  onClick={() => setCurrentStep(5)}
-                  className="bg-black text-white py-4 px-12 rounded-lg font-bold text-lg hover:bg-gray-800 transition-all shadow-lg"
-                >
-                  Continue
-                </button>
+
+                {/* Main Content */}
+                <div className="relative z-10">
+                  {/* Animated Diamond Icon */}
+                  <div className="mb-8 flex justify-center">
+                    <div className="relative">
+                      {/* Glow Effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 rounded-full blur-2xl opacity-50 animate-pulse"></div>
+                      {/* Main Diamond */}
+                      <div className="relative w-32 h-32 bg-gradient-to-br from-yellow-300 via-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-2xl animate-bounce">
+                        <span className="text-7xl">💎</span>
+                      </div>
+                      {/* Sparkles */}
+                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center animate-ping">
+                        <span className="text-2xl">✨</span>
+                      </div>
+                      <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-white rounded-full flex items-center justify-center animate-ping delay-150">
+                        <span className="text-xl">⭐</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Success Message */}
+                  <div className="mb-4">
+                    <div className="inline-block bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wide mb-6 shadow-lg">
+                      🎉 NDA Successfully Signed
+                    </div>
+                  </div>
+
+                  <h2 className="text-5xl md:text-6xl font-black text-gray-900 mb-6 leading-tight">
+                    Congratulations!
+                    <br />
+                    <span className="bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-700 bg-clip-text text-transparent">
+                      You're a Diamond Investor
+                    </span>
+                  </h2>
+
+                  <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+                    Welcome to an exclusive community of elite real estate investors with access to premium opportunities.
+                  </p>
+
+                  {/* Benefits Grid */}
+                  <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
+                    <div className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border-2 border-gray-200 shadow-lg hover:shadow-xl transition-shadow">
+                      <div className="text-4xl mb-3">🏆</div>
+                      <h3 className="font-bold text-gray-900 mb-2">Exclusive Deals</h3>
+                      <p className="text-sm text-gray-600">First access to premium investment opportunities</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border-2 border-gray-200 shadow-lg hover:shadow-xl transition-shadow">
+                      <div className="text-4xl mb-3">👥</div>
+                      <h3 className="font-bold text-gray-900 mb-2">Personal Advisor</h3>
+                      <p className="text-sm text-gray-600">Dedicated support from experienced professionals</p>
+                    </div>
+                    <div className="bg-gradient-to-br from-gray-50 to-white p-6 rounded-xl border-2 border-gray-200 shadow-lg hover:shadow-xl transition-shadow">
+                      <div className="text-4xl mb-3">📊</div>
+                      <h3 className="font-bold text-gray-900 mb-2">Advanced Analytics</h3>
+                      <p className="text-sm text-gray-600">Real-time insights and market analysis tools</p>
+                    </div>
+                  </div>
+
+                  {/* CTA Button */}
+                  <button
+                    onClick={() => setCurrentStep(5)}
+                    className="bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white py-5 px-16 rounded-xl font-black text-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 shadow-lg"
+                  >
+                    Meet Your Advisor →
+                  </button>
+
+                  <p className="text-sm text-gray-500 mt-6">
+                    Next: Get introduced to your dedicated sales advisor
+                  </p>
+                </div>
               </div>
             )}
 
             {/* Step 5: Sales Advisor Assignment */}
             {currentStep === 5 && (
-              <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2 text-center">
-                  Meet Your Sales Advisor
-                </h2>
-                <p className="text-gray-600 mb-8 text-center">
-                  Your dedicated point of contact for all investment opportunities
-                </p>
+              <div className="relative py-12 px-4">
+                {/* Decorative Background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-50 rounded-lg"></div>
 
-                <div className="max-w-xl mx-auto">
-                  <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-8 border-2 border-gray-200">
-                    {/* Advisor Photo */}
-                    <div className="flex justify-center mb-6">
-                      <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-200 ring-4 ring-black shadow-lg">
-                        <img
-                          src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80"
-                          alt="Sarah Johnson"
-                          className="w-full h-full object-cover"
-                        />
+                <div className="relative z-10">
+                  {/* Header */}
+                  <div className="text-center mb-12">
+                    <div className="inline-block bg-black text-white px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wide mb-6">
+                      ✨ Your Personal Team
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+                      Meet Your Sales Advisor
+                    </h2>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                      Your dedicated expert who will guide you through every investment opportunity
+                    </p>
+                  </div>
+
+                  {/* Advisor Card */}
+                  <div className="max-w-2xl mx-auto">
+                    <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border-4 border-black">
+                      {/* Card Header */}
+                      <div className="bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white px-8 py-6">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-gray-300 mb-1">Welcome to the team,</p>
+                            <p className="text-2xl font-bold">{firstName}!</p>
+                          </div>
+                          <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
+                            <span className="text-2xl">💎</span>
+                          </div>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Advisor Info */}
-                    <div className="text-center mb-6">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-1">
-                        Sarah Johnson
-                      </h3>
-                      <p className="text-gray-600 font-medium">
-                        Senior Investment Advisor
-                      </p>
-                    </div>
+                      {/* Advisor Profile */}
+                      <div className="p-8 md:p-10">
+                        {/* Photo & Welcome Message */}
+                        <div className="flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
+                          {/* Photo */}
+                          <div className="flex-shrink-0">
+                            <div className="relative">
+                              <div className="w-36 h-36 rounded-2xl overflow-hidden bg-gray-200 ring-4 ring-yellow-400 shadow-xl">
+                                <img
+                                  src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80"
+                                  alt="Sarah Johnson"
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <div className="absolute -bottom-2 -right-2 bg-green-500 w-8 h-8 rounded-full border-4 border-white shadow-lg flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">✓</span>
+                              </div>
+                            </div>
+                          </div>
 
-                    {/* Contact Info */}
-                    <div className="space-y-4 mb-6">
-                      <div className="flex items-center justify-center gap-3 p-3 bg-white rounded-lg">
-                        <span className="text-2xl">📞</span>
-                        <a
-                          href="tel:+15125550123"
-                          className="text-black hover:text-gray-700 font-semibold"
+                          {/* Info */}
+                          <div className="flex-1 text-center md:text-left">
+                            <h3 className="text-3xl font-black text-gray-900 mb-2">
+                              Sarah Johnson
+                            </h3>
+                            <p className="text-gray-600 font-semibold mb-4 text-lg">
+                              Senior Investment Advisor
+                            </p>
+                            <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 border-2 border-yellow-400 rounded-lg p-4 mb-4">
+                              <p className="text-sm text-gray-800 italic">
+                                "Hi {firstName}! I'm thrilled to be your advisor. I'll be reaching out soon to discuss your investment goals and show you our current opportunities. Let's build wealth together!"
+                              </p>
+                            </div>
+                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+                              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold">8+ Years Experience</span>
+                              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold">$50M+ Deals Closed</span>
+                              <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold">200+ Happy Investors</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Contact Methods */}
+                        <div className="grid md:grid-cols-2 gap-4 mb-8">
+                          <a
+                            href="tel:+15125550123"
+                            className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl hover:border-black hover:shadow-lg transition-all group"
+                          >
+                            <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                              <span className="text-2xl">📞</span>
+                            </div>
+                            <div>
+                              <p className="text-xs text-gray-500 font-semibold">Call Direct</p>
+                              <p className="text-black font-bold">(512) 555-0123</p>
+                            </div>
+                          </a>
+                          <a
+                            href="mailto:sarah.johnson@diamondacquisitions.com"
+                            className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl hover:border-black hover:shadow-lg transition-all group"
+                          >
+                            <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                              <span className="text-2xl">📧</span>
+                            </div>
+                            <div className="overflow-hidden">
+                              <p className="text-xs text-gray-500 font-semibold">Email</p>
+                              <p className="text-black font-bold text-sm truncate">sarah.johnson@diamondacquisitions.com</p>
+                            </div>
+                          </a>
+                        </div>
+
+                        {/* Important Notice */}
+                        <div className="bg-gradient-to-r from-black to-gray-900 text-white rounded-xl p-6 mb-8">
+                          <div className="flex items-start gap-4">
+                            <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center flex-shrink-0">
+                              <span className="text-xl">⭐</span>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-lg mb-2">Your VIP Support</h4>
+                              <p className="text-sm text-gray-200 leading-relaxed">
+                                Sarah is your primary point of contact for everything. She'll personally notify you of new deals matching your preferences, answer all your questions, and guide you through the entire investment process from start to finish.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* What Happens Next */}
+                        <div className="bg-gray-50 rounded-xl p-6 mb-8 border-2 border-gray-200">
+                          <h4 className="font-bold text-gray-900 mb-4 text-lg">🚀 What Happens Next</h4>
+                          <div className="space-y-3">
+                            <div className="flex items-start gap-3">
+                              <div className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs">1</div>
+                              <p className="text-sm text-gray-700"><strong>Within 24 hours:</strong> Sarah will send you a personalized welcome email</p>
+                            </div>
+                            <div className="flex items-start gap-3">
+                              <div className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs">2</div>
+                              <p className="text-sm text-gray-700"><strong>This week:</strong> You'll receive deals matching your investment preferences</p>
+                            </div>
+                            <div className="flex items-start gap-3">
+                              <div className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs">3</div>
+                              <p className="text-sm text-gray-700"><strong>Ongoing:</strong> Track your investments and opportunities in your dashboard</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* CTA Button */}
+                        <button
+                          onClick={handleFinalSubmit}
+                          className="w-full bg-gradient-to-r from-gray-900 via-black to-gray-900 text-white py-5 px-8 rounded-xl font-black text-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 shadow-lg flex items-center justify-center gap-3"
                         >
-                          (512) 555-0123
-                        </a>
-                      </div>
-                      <div className="flex items-center justify-center gap-3 p-3 bg-white rounded-lg">
-                        <span className="text-2xl">📧</span>
-                        <a
-                          href="mailto:sarah.johnson@diamondacquisitions.com"
-                          className="text-black hover:text-gray-700 font-semibold"
-                        >
-                          sarah.johnson@diamondacquisitions.com
-                        </a>
-                      </div>
-                    </div>
+                          <span>Enter Your Dashboard</span>
+                          <span className="text-2xl">→</span>
+                        </button>
 
-                    <div className="bg-white rounded-lg p-4 border-2 border-black">
-                      <p className="text-sm text-gray-700 text-center">
-                        <strong className="text-black">Important:</strong> Sarah is your primary point of contact. She'll help you navigate opportunities, answer questions, and guide you through every investment.
-                      </p>
+                        <p className="text-center text-sm text-gray-500 mt-4">
+                          You're all set! Start exploring investment opportunities now.
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-
-                <div className="mt-8 text-center">
-                  <button
-                    onClick={handleFinalSubmit}
-                    className="bg-black text-white py-4 px-12 rounded-lg font-bold text-lg hover:bg-gray-800 transition-all shadow-lg"
-                  >
-                    Go to Dashboard
-                  </button>
                 </div>
               </div>
             )}
@@ -792,82 +940,186 @@ export default function SignUpPage() {
         </div>
       </div>
 
-      {/* PandaDoc Modal */}
+      {/* PandaDoc-Style NDA Modal */}
       {showNdaModal && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4"
           onClick={() => setShowNdaModal(false)}
         >
           <div
-            className="bg-white rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-8 relative"
+            className="bg-white rounded-xl shadow-2xl max-w-5xl w-full max-h-[95vh] overflow-hidden relative flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={() => setShowNdaModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-3xl"
-            >
-              ×
-            </button>
-
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              Non-Disclosure Agreement
-            </h2>
-
-            {/* Mock NDA Content */}
-            <div className="prose max-w-none mb-8">
-              <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 mb-6">
-                <p className="text-sm text-gray-700 mb-2">
-                  <strong>Party 1:</strong> Diamond Acquisitions LLC
-                </p>
-                <p className="text-sm text-gray-700 mb-2">
-                  <strong>Party 2:</strong> {firstName} {lastName}
-                </p>
-                <p className="text-sm text-gray-700 mb-2">
-                  <strong>Email:</strong> {email}
-                </p>
-                <p className="text-sm text-gray-700">
-                  <strong>Date:</strong> {new Date().toLocaleDateString()}
-                </p>
+            {/* PandaDoc-style Header */}
+            <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white px-8 py-5 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
+                  <span className="text-2xl">📄</span>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold">Non-Disclosure Agreement</h2>
+                  <p className="text-sm text-gray-300">Diamond Acquisitions LLC</p>
+                </div>
               </div>
-
-              <p className="text-gray-700 mb-4">
-                This Non-Disclosure Agreement ("Agreement") is entered into between Diamond Acquisitions LLC and the undersigned party for the purpose of preventing the unauthorized disclosure of Confidential Information.
-              </p>
-
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                1. Definition of Confidential Information
-              </h3>
-              <p className="text-gray-700 mb-4">
-                "Confidential Information" means all information disclosed by Diamond Acquisitions, including but not limited to property details, financial information, investment opportunities, and business strategies.
-              </p>
-
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                2. Obligations
-              </h3>
-              <p className="text-gray-700 mb-4">
-                The receiving party agrees to: (a) hold and maintain the Confidential Information in strict confidence; (b) not disclose the Confidential Information to third parties without prior written consent; (c) use the Confidential Information solely for evaluation of investment opportunities.
-              </p>
-
-              <h3 className="text-lg font-bold text-gray-900 mb-2">
-                3. Term
-              </h3>
-              <p className="text-gray-700 mb-4">
-                This Agreement shall remain in effect for a period of five (5) years from the date of execution.
-              </p>
+              <button
+                onClick={() => setShowNdaModal(false)}
+                className="text-gray-300 hover:text-white text-3xl transition-colors"
+              >
+                ×
+              </button>
             </div>
 
-            {/* Signature Section */}
-            <div className="border-t-2 border-gray-200 pt-6">
-              <p className="text-gray-700 mb-6">
-                By clicking "I Agree and Sign" below, you acknowledge that you have read, understood, and agree to be bound by the terms of this Non-Disclosure Agreement.
-              </p>
+            {/* Status Bar */}
+            <div className="bg-yellow-50 border-b-2 border-yellow-200 px-8 py-3">
+              <div className="flex items-center gap-2">
+                <span className="text-yellow-600 text-lg">⚠️</span>
+                <p className="text-sm font-semibold text-yellow-800">
+                  Action Required: Please review and sign this document to continue
+                </p>
+              </div>
+            </div>
 
-              <button
-                onClick={handleNdaComplete}
-                className="w-full bg-black text-white py-4 px-8 rounded-lg font-bold text-lg hover:bg-gray-800 transition-all shadow-lg"
-              >
-                I Agree and Sign
-              </button>
+            {/* Document Content */}
+            <div className="flex-1 overflow-y-auto px-8 py-6 bg-gray-50">
+              <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-10 border border-gray-200">
+                {/* Document Header */}
+                <div className="text-center mb-8 pb-6 border-b-2 border-gray-200">
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                    NON-DISCLOSURE AGREEMENT
+                  </h1>
+                  <p className="text-sm text-gray-500">Document ID: NDA-{new Date().getFullYear()}-{Math.floor(Math.random() * 10000).toString().padStart(4, '0')}</p>
+                </div>
+
+                {/* Party Information */}
+                <div className="mb-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border-2 border-gray-300">
+                  <h3 className="text-sm font-bold text-gray-600 uppercase tracking-wide mb-4">Agreement Between</h3>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Disclosing Party</p>
+                      <p className="font-bold text-gray-900">Diamond Acquisitions LLC</p>
+                      <p className="text-sm text-gray-600">123 Investment Blvd, Suite 100</p>
+                      <p className="text-sm text-gray-600">Austin, TX 78701</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">Receiving Party</p>
+                      <p className="font-bold text-gray-900">{firstName} {lastName}</p>
+                      <p className="text-sm text-gray-600">{email}</p>
+                      <p className="text-sm text-gray-600">{phone}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-300">
+                    <p className="text-xs text-gray-500">Effective Date</p>
+                    <p className="font-semibold text-gray-900">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  </div>
+                </div>
+
+                {/* Agreement Content */}
+                <div className="space-y-6 mb-8 text-gray-700 leading-relaxed">
+                  <p className="text-base">
+                    This Non-Disclosure Agreement ("<strong>Agreement</strong>") is entered into between Diamond Acquisitions LLC ("<strong>Disclosing Party</strong>") and the undersigned party ("<strong>Receiving Party</strong>") for the purpose of preventing the unauthorized disclosure of Confidential Information as defined below.
+                  </p>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                      <span className="bg-black text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">1</span>
+                      Definition of Confidential Information
+                    </h3>
+                    <p className="pl-9">
+                      "<strong>Confidential Information</strong>" means all information, whether written, oral, electronic, or visual, disclosed by the Disclosing Party to the Receiving Party, including but not limited to:
+                    </p>
+                    <ul className="pl-9 mt-2 space-y-1 list-disc list-inside">
+                      <li>Property details, addresses, and financial information</li>
+                      <li>Investment opportunities and deal structures</li>
+                      <li>Business strategies, plans, and methodologies</li>
+                      <li>Client and investor information</li>
+                      <li>Any other proprietary or sensitive business information</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                      <span className="bg-black text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">2</span>
+                      Obligations of Receiving Party
+                    </h3>
+                    <p className="pl-9 mb-2">The Receiving Party agrees to:</p>
+                    <ul className="pl-9 space-y-1 list-disc list-inside">
+                      <li>Hold and maintain the Confidential Information in strict confidence</li>
+                      <li>Not disclose the Confidential Information to any third parties without prior written consent</li>
+                      <li>Use the Confidential Information solely for the purpose of evaluating investment opportunities</li>
+                      <li>Protect the Confidential Information using the same degree of care used to protect their own confidential information</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                      <span className="bg-black text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">3</span>
+                      Term and Termination
+                    </h3>
+                    <p className="pl-9">
+                      This Agreement shall remain in effect for a period of <strong>five (5) years</strong> from the date of execution. The obligations of confidentiality shall survive the termination of this Agreement and continue indefinitely.
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+                      <span className="bg-black text-white w-7 h-7 rounded-full flex items-center justify-center text-sm">4</span>
+                      Remedies
+                    </h3>
+                    <p className="pl-9">
+                      The Receiving Party acknowledges that any breach of this Agreement may cause irreparable harm to the Disclosing Party and that monetary damages may be inadequate. The Disclosing Party shall be entitled to seek equitable relief, including injunction and specific performance.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Signature Section */}
+                <div className="border-t-4 border-gray-900 pt-8 mt-8">
+                  <h3 className="text-lg font-bold text-gray-900 mb-4">Electronic Signature</h3>
+                  <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-5 mb-6">
+                    <p className="text-sm text-gray-800 leading-relaxed">
+                      <strong className="text-yellow-800">⚠️ Important:</strong> By clicking "I Agree and Sign" below, you acknowledge that you have read, understood, and agree to be legally bound by all terms and conditions of this Non-Disclosure Agreement. Your electronic signature has the same legal effect as a handwritten signature.
+                    </p>
+                  </div>
+
+                  <div className="grid md:grid-cols-2 gap-6 mb-6">
+                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-300">
+                      <p className="text-xs text-gray-500 mb-2">Signer Name</p>
+                      <p className="font-bold text-gray-900 text-lg">{firstName} {lastName}</p>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg border border-gray-300">
+                      <p className="text-xs text-gray-500 mb-2">Signature Date</p>
+                      <p className="font-bold text-gray-900 text-lg">{new Date().toLocaleDateString()}</p>
+                    </div>
+                  </div>
+
+                  <div className="p-4 bg-white border-2 border-dashed border-gray-400 rounded-lg mb-6">
+                    <p className="text-xs text-gray-500 mb-2">Electronic Signature</p>
+                    <p className="font-signature text-3xl text-gray-900 italic">{firstName} {lastName}</p>
+                    <p className="text-xs text-gray-400 mt-2">IP Address: 192.168.1.xxx | Timestamp: {new Date().toISOString()}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Action Bar */}
+            <div className="bg-white border-t-2 border-gray-200 px-8 py-5 flex items-center justify-between shadow-lg">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <span className="inline-block w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></span>
+                Awaiting your signature
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setShowNdaModal(false)}
+                  className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleNdaComplete}
+                  className="px-8 py-3 bg-gradient-to-r from-gray-900 to-black text-white rounded-lg font-bold text-lg hover:from-gray-800 hover:to-gray-900 transition-all shadow-lg flex items-center gap-2"
+                >
+                  <span>✓</span> I Agree and Sign
+                </button>
+              </div>
             </div>
           </div>
         </div>
