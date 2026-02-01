@@ -513,26 +513,13 @@ export default function DealDetailPage() {
         {/* Right Column - Profit Calculator (Sticky) */}
         <div className="lg:col-span-1">
           <div className="space-y-6">
-            {/* Soft CTA Above Calculator */}
-            <div className="bg-gradient-to-r from-blue-50 to-slate-50 rounded-lg shadow-md p-6 border border-blue-200">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span className="text-2xl">📊</span>
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 mb-2">
-                  Want a full underwriting breakdown?
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Get detailed cash flow projections, exit strategies, and more.
-                </p>
-                <button
-                  onClick={() => setShowAdvisorModal(true)}
-                  className="w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-2.5 px-4 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md text-sm"
-                >
-                  Talk to Your Diamond Advisor
-                </button>
-              </div>
-            </div>
+            {/* CTA Above Calculator */}
+            <button
+              onClick={() => setShowAdvisorModal(true)}
+              className="w-full bg-gradient-to-r from-slate-900 to-blue-900 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-900 hover:to-slate-900 transition-all duration-300 transform hover:scale-105 shadow-md"
+            >
+              Click for More Info
+            </button>
 
             {/* Enhanced Profit Calculator */}
             <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 sticky top-8">
@@ -724,16 +711,6 @@ export default function DealDetailPage() {
                   </div>
                   <p className="text-xs text-gray-500 mt-2 text-center">
                     White line shows your current scenario
-                  </p>
-                </div>
-
-                {/* Formula Reference */}
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg text-xs text-gray-600">
-                  <p className="font-semibold mb-1">Formula:</p>
-                  <p className="font-mono">
-                    Sale Proceeds = Sale Price × (1 − Closing %)
-                    <br />
-                    Net Profit = Sale Proceeds − Purchase − Rehab
                   </p>
                 </div>
               </div>
