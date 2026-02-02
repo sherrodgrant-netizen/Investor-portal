@@ -294,6 +294,19 @@ export default function DealDetailPage() {
                 </p>
               </div>
             </div>
+
+            {/* Pictures Button - Links to Dropbox */}
+            {deal.dropboxLink && (
+              <a
+                href={deal.dropboxLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-6 w-full inline-flex items-center justify-center gap-3 bg-black text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-md"
+              >
+                <span className="text-xl">📸</span>
+                Pictures
+              </a>
+            )}
           </section>
 
           {/* Rehab Section */}
