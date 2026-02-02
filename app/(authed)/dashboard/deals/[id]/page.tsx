@@ -330,35 +330,29 @@ export default function DealDetailPage() {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Rehab Details
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">HVAC Age</p>
-                  <p className="text-lg font-bold text-gray-900">
-                    {deal.rehab.hvacAge} years
-                  </p>
-                </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="p-4 bg-gray-50 rounded-lg">
                   <p className="text-sm text-gray-600 mb-1">Roof Age</p>
-                  <p className="text-lg font-bold text-gray-900">
-                    {deal.rehab.roofAge} years
+                  <p className="text-xl font-bold text-gray-900">
+                    {deal.rehab.roofAge} yrs
                   </p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg col-span-1 md:col-span-2">
+                <div className="p-4 bg-gray-50 rounded-lg">
                   <p className="text-sm text-gray-600 mb-1">Foundation</p>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-xl font-bold text-gray-900">
                     {deal.rehab.foundationNotes}
                   </p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg col-span-1 md:col-span-2">
-                  <p className="text-sm text-gray-600 mb-1">Electrical</p>
-                  <p className="text-sm text-gray-700">
-                    {deal.rehab.electricalNotes}
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">HVAC Age</p>
+                  <p className="text-xl font-bold text-gray-900">
+                    {deal.rehab.hvacAge} yrs
                   </p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg col-span-1 md:col-span-2">
-                  <p className="text-sm text-gray-600 mb-1">Plumbing</p>
+                <div className="p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Additional Info</p>
                   <p className="text-sm text-gray-700">
-                    {deal.rehab.plumbingNotes}
+                    {[deal.rehab.electricalNotes, deal.rehab.plumbingNotes].filter(Boolean).join(". ")}
                   </p>
                 </div>
               </div>
