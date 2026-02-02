@@ -406,6 +406,9 @@ export default function DealDetailPage() {
                       Lot Size
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Price
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
                       Notes
                     </th>
                   </tr>
@@ -424,6 +427,9 @@ export default function DealDetailPage() {
                       <td className="px-4 py-3 text-gray-700">{comp.yearBuilt}</td>
                       <td className="px-4 py-3 text-gray-700">{comp.garageSize}</td>
                       <td className="px-4 py-3 text-gray-700">{comp.lotSize}</td>
+                      <td className="px-4 py-3 text-gray-700 font-semibold">
+                        {formatPrice(comp.salePrice)}
+                      </td>
                       <td className="px-4 py-3 text-gray-600 text-xs">
                         {comp.notes}
                       </td>
@@ -450,6 +456,9 @@ export default function DealDetailPage() {
                       </td>
                       <td className="px-4 py-3 text-gray-900">
                         {comparableAverages.lotSize}
+                      </td>
+                      <td className="px-4 py-3 text-gray-900 font-semibold">
+                        {formatPrice(compPrices.avg)}
                       </td>
                       <td className="px-4 py-3 text-gray-600 text-xs">
                         {comparableAverages.notes}

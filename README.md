@@ -516,6 +516,26 @@ Comparables can be implemented as either:
 
 **Option B**: Store comparables as JSON in a Long Text Area on the Deal object
 
+#### How Comparables Drive the Profit Calculator
+
+This is a critical data flow that the Salesforce developer must understand:
+
+1. **Comparables table** — The portal displays a grid of comparable properties for each deal. Each comp has: Address, Beds, Baths, Sqft, Year, Garage, Lot Size, **Sale Price**, and Notes. The bottom row auto-calculates averages across all comps.
+
+2. **Sale Price is the key field** — The `DACQ_Comp_Sale_Price__c` on each comparable is what powers the Profit Calculator sidebar. The portal calculates:
+   - **Lowest comp sale price** = slider minimum
+   - **Highest comp sale price** = slider maximum
+   - **Average comp sale price** = slider default starting position
+
+3. **Assumed Sale Price slider** — The investor slides between the lowest and highest comp prices to model different sale scenarios. This directly affects the projected profit calculation:
+   ```
+   Profit = Assumed Sale Price × (1 - Closing Cost %) - Purchase Price - Rehab Estimate
+   ```
+
+4. **Profit Confidence Range** — The profit range bar uses the lowest comp price with conservative rehab (+20%) as the worst case, and the highest comp price with aggressive rehab (-15%) as the best case.
+
+**What this means for Salesforce**: Every deal MUST have comparable properties with accurate `DACQ_Comp_Sale_Price__c` values for the profit calculator to work. Without comps, the calculator has no price range to display. The Salesforce team should ensure that when a deal is published (`DACQ_Published__c = true`), it has at least 2-3 comparables with sale prices populated.
+
 ---
 
 ## Signup Flow (5 Steps)
