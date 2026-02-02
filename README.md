@@ -398,6 +398,17 @@ The Salesforce integration layer is **scaffolded but uses mock/stub functions**.
 
 **File**: `lib/salesforce/queries.ts`
 
+### IMPORTANT: API Names Are Not Final
+
+The Salesforce custom object and field API names used throughout this codebase (e.g., `DACQ_Deal__c`, `DACQ_Address__c`, `DACQ_Investor_Engagement__c`) are **proposed names only**. Many of these objects and fields **do not yet exist** in the Salesforce org and need to be created. Others may already exist under different names.
+
+**What this means for the developer:**
+- Do NOT assume the API names in this README match what's currently in Salesforce. Audit the org first.
+- If an object or field already exists with a different name, update the portal code to match the real Salesforce API names — or rename the Salesforce fields to match. Either approach works, but they must be consistent.
+- The environment variables `SF_OBJ_DEAL`, `SF_OBJ_ENGAGEMENT`, and `SF_CONTACT_STATUS_FIELD` exist specifically so field names can be configured without code changes. Use these where possible.
+- The field names in the SOQL queries (in `lib/salesforce/queries.ts` and `app/api/deals/route.ts`) will need to be updated to match whatever the real Salesforce field API names are.
+- Treat the tables below as a **specification of what data the portal needs**, not as a guaranteed Salesforce schema.
+
 ### Helper Functions Available
 
 ```typescript
@@ -793,11 +804,55 @@ Prioritized list of everything the Salesforce developer needs to connect:
 - [ ] Verify `POST /api/events` correctly creates engagement records
 - [ ] Build Salesforce reports/dashboards on engagement data
 
-### Priority 6 — Email Automation
-- [ ] Use Settings preferences (scope + frequency) to drive email sends
-- [ ] Build email automation in Marketing Cloud or Salesforce Flow
-- [ ] Daily: new deals matching investor's scope at 8 AM CST
-- [ ] Weekly: digest of all new deals from past week, every Monday 8 AM CST
+### Priority 6 — Email Automation (Deal Notification System)
+
+This is a core feature. When a deal is moved to "available" (i.e., `DACQ_Published__c` is set to `true`), investors should automatically receive email notifications based on their preferences.
+
+#### The Trigger
+- When a deal record's `DACQ_Published__c` field changes from `false` to `true`, this should trigger the email notification process.
+- This can be implemented as a Salesforce Flow, Process Builder, or Apex trigger — whatever the team prefers.
+
+#### Investor Email Preferences (Two Settings)
+
+Each investor (Contact) has two email preference fields that control what they receive:
+
+**1. Email Scope** (`DACQ_Email_Scope__c`) — What deals they want to hear about:
+- `"all"` — The investor wants emails for **every new deal** regardless of location. When any deal is published, they get notified.
+- `"counties"` — The investor only wants emails for deals in **specific counties they selected**. The selected counties are stored in `DACQ_Email_Counties__c` as a JSON array (e.g., `["Travis County", "Williamson County", "Hays County"]`). When a deal is published, compare the deal's county/location to the investor's selected counties. Only send the email if there's a match.
+
+**2. Email Frequency** (`DACQ_Email_Frequency__c`) — How often they receive emails:
+- `"daily"` — Send a daily digest at 8:00 AM CST containing all new deals from the past 24 hours that match the investor's scope.
+- `"weekly"` — Send a weekly digest every Monday at 8:00 AM CST containing all new deals from the past 7 days that match the investor's scope.
+
+#### Email Logic Flow
+
+```
+Deal published (DACQ_Published__c → true)
+  │
+  ├── Query all Contacts where DACQ_Email_Scope__c = "all"
+  │     └── Add deal to their next email batch (daily or weekly based on frequency pref)
+  │
+  └── Query all Contacts where DACQ_Email_Scope__c = "counties"
+        └── Check if deal's county is IN the Contact's DACQ_Email_Counties__c array
+              └── If match → Add deal to their next email batch
+              └── If no match → Skip this investor
+```
+
+#### Scheduled Send Jobs
+- **Daily job** (8:00 AM CST): Query all investors with `DACQ_Email_Frequency__c = "daily"`. For each, gather all deals published in the last 24 hours that match their scope. Send one email with all matching deals.
+- **Weekly job** (Monday 8:00 AM CST): Query all investors with `DACQ_Email_Frequency__c = "weekly"`. For each, gather all deals published in the last 7 days that match their scope. Send one digest email.
+
+#### Implementation Options
+- **Salesforce Flow + Scheduled Flow**: Use a record-triggered Flow on Deal to queue notifications, and a scheduled Flow for daily/weekly sends.
+- **Marketing Cloud**: If already using MC, create journeys triggered by deal publication with audience segmentation based on investor preferences.
+- **Apex Scheduled Jobs**: Custom Apex batch job that runs daily at 8 AM CST, queries matching investors and deals, and sends emails via Salesforce email templates.
+
+#### What the Portal Provides
+The Settings page (`/dashboard/settings`) lets investors change their preferences at any time:
+- Toggle between "All Available Deals" and "Selected Counties Only"
+- Pick specific counties from a grid (Travis, Williamson, Hays, Bastrop, Caldwell, Burnet, Bell, Comal)
+- Choose Daily or Weekly frequency
+- These selections need to be saved to the Contact fields listed above via an API call
 
 ### Priority 7 — Advisor Assignment
 - [ ] Create advisor lookup/assignment field on Contact
