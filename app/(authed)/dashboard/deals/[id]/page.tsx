@@ -4,25 +4,104 @@ import { useState, useMemo, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { getDealById } from "@/lib/mockDeals";
 import { ComparableAverages } from "@/types/deal";
 import PropertyMap from "@/components/PropertyMap";
+
+// Deal type for API response
+interface Deal {
+  id: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  lat: number;
+  lng: number;
+  heroImage: string;
+  purchasePrice: number;
+  description: string;
+  dropboxLink: string;
+  characteristics: {
+    beds: number;
+    baths: number;
+    halfBaths: number;
+    sqft: number;
+    yearBuilt: string;
+    homeType: string;
+    garageSize: string;
+    garageAttached: boolean;
+    lotSize: string;
+  };
+  rehab: {
+    condition: string;
+    roofAge: string;
+    roofType: string;
+    foundationNotes: string;
+    hvacAge: string;
+    hvacType: string;
+    electricalNotes: string;
+    plumbingNotes: string;
+    estimatedRehabTotal: number;
+  };
+  arv: number;
+  comparables: any[];
+}
 
 export default function DealDetailPage() {
   const params = useParams();
   const dealId = params.id as string;
-  const deal = getDealById(dealId);
 
-  // Comp-based pricing calculations
+  const [deal, setDeal] = useState<Deal | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch deal from API
+  useEffect(() => {
+    async function fetchDeal() {
+      try {
+        const res = await fetch(`/api/deals/${dealId}`);
+        if (!res.ok) {
+          if (res.status === 404) {
+            setError("Deal not found");
+          } else {
+            setError("Failed to load deal");
+          }
+          return;
+        }
+        const data = await res.json();
+        setDeal(data.deal);
+      } catch (err) {
+        console.error("Failed to fetch deal:", err);
+        setError("Failed to load deal");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (dealId) {
+      fetchDeal();
+    }
+  }, [dealId]);
+
+  // Comp-based pricing calculations (uses ARV as fallback if no comparables)
   const compPrices = useMemo(() => {
-    if (!deal || deal.comparables.length === 0) {
+    if (!deal) {
       return { min: 0, max: 0, avg: 0 };
     }
-    const prices = deal.comparables.map((c) => c.salePrice);
+    // If we have comparables, use them
+    if (deal.comparables && deal.comparables.length > 0) {
+      const prices = deal.comparables.map((c: any) => c.salePrice);
+      return {
+        min: Math.min(...prices),
+        max: Math.max(...prices),
+        avg: Math.round(prices.reduce((sum: number, p: number) => sum + p, 0) / prices.length),
+      };
+    }
+    // Fallback: use ARV with +/- 10% range
+    const arv = deal.arv || deal.purchasePrice * 1.3;
     return {
-      min: Math.min(...prices),
-      max: Math.max(...prices),
-      avg: Math.round(prices.reduce((sum, p) => sum + p, 0) / prices.length),
+      min: Math.round(arv * 0.9),
+      max: Math.round(arv * 1.1),
+      avg: Math.round(arv),
     };
   }, [deal]);
 
@@ -38,12 +117,12 @@ export default function DealDetailPage() {
   const [showContractorModal, setShowContractorModal] = useState(false);
   const [showAdvisorModal, setShowAdvisorModal] = useState(false);
 
-  // Initialize assumed sale price when comp prices are calculated
+  // Initialize assumed sale price when deal loads or comp prices are calculated
   useEffect(() => {
     if (compPrices.avg > 0 && assumedSalePrice === 0) {
       setAssumedSalePrice(compPrices.avg);
     }
-  }, [compPrices.avg]);
+  }, [compPrices.avg, assumedSalePrice]);
 
   // Calculate rehab based on confidence
   const calculatedRehab = useMemo(() => {
@@ -61,15 +140,15 @@ export default function DealDetailPage() {
 
   // Calculate comparable averages
   const comparableAverages = useMemo((): ComparableAverages | null => {
-    if (!deal || deal.comparables.length === 0) return null;
+    if (!deal || !deal.comparables || deal.comparables.length === 0) return null;
 
     const comps = deal.comparables;
     const avg = {
-      beds: comps.reduce((sum, c) => sum + c.beds, 0) / comps.length,
-      baths: comps.reduce((sum, c) => sum + c.baths, 0) / comps.length,
-      sqft: Math.round(comps.reduce((sum, c) => sum + c.sqft, 0) / comps.length),
+      beds: comps.reduce((sum: number, c: any) => sum + c.beds, 0) / comps.length,
+      baths: comps.reduce((sum: number, c: any) => sum + c.baths, 0) / comps.length,
+      sqft: Math.round(comps.reduce((sum: number, c: any) => sum + c.sqft, 0) / comps.length),
       yearBuilt: Math.round(
-        comps.reduce((sum, c) => sum + c.yearBuilt, 0) / comps.length
+        comps.reduce((sum: number, c: any) => sum + c.yearBuilt, 0) / comps.length
       ),
       garageSize: "Mixed",
       lotSize: "Varies",
@@ -79,10 +158,42 @@ export default function DealDetailPage() {
     return avg;
   }, [deal]);
 
-  if (!deal) {
+  // Calculate profit range for confidence bar (moved before conditional returns)
+  const profitRange = useMemo(() => {
+    if (!deal) return { min: 0, max: 0 };
+    const conservativeRehab = Math.round(
+      (deal.rehab.estimatedRehabTotal || 0) * 1.2
+    );
+    const aggressiveRehab = Math.round(
+      (deal.rehab.estimatedRehabTotal || 0) * 0.85
+    );
+
+    const minProfit =
+      compPrices.min * (1 - closingCostPercent / 100) -
+      deal.purchasePrice -
+      conservativeRehab;
+    const maxProfit =
+      compPrices.max * (1 - closingCostPercent / 100) -
+      deal.purchasePrice -
+      aggressiveRehab;
+
+    return { min: minProfit, max: maxProfit };
+  }, [deal, compPrices, closingCostPercent]);
+
+  if (loading) {
+    return (
+      <div className="text-center py-16">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Loading Deal...</h2>
+        <p className="text-gray-600">Fetching details from Salesforce</p>
+      </div>
+    );
+  }
+
+  if (error || !deal) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Deal not found</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">{error || "Deal not found"}</h2>
         <Link
           href="/dashboard/deals"
           className="text-black hover:text-gray-700 underline"
@@ -107,28 +218,6 @@ export default function DealDetailPage() {
     const saleProceeds = assumedSalePrice * (1 - closingCostPercent / 100);
     return saleProceeds - deal.purchasePrice - calculatedRehab;
   };
-
-  // Calculate profit range for confidence bar
-  const profitRange = useMemo(() => {
-    if (!deal) return { min: 0, max: 0 };
-    const conservativeRehab = Math.round(
-      (deal.rehab.estimatedRehabTotal || 0) * 1.2
-    );
-    const aggressiveRehab = Math.round(
-      (deal.rehab.estimatedRehabTotal || 0) * 0.85
-    );
-
-    const minProfit =
-      compPrices.min * (1 - closingCostPercent / 100) -
-      deal.purchasePrice -
-      conservativeRehab;
-    const maxProfit =
-      compPrices.max * (1 - closingCostPercent / 100) -
-      deal.purchasePrice -
-      aggressiveRehab;
-
-    return { min: minProfit, max: maxProfit };
-  }, [deal, compPrices, closingCostPercent]);
 
   const getProfitZone = (profit: number) => {
     const dealSpread = compPrices.avg - (deal?.purchasePrice || 0);
@@ -505,20 +594,23 @@ export default function DealDetailPage() {
                     {comp.address}
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {comp.images.map((image, idx) => (
-                      <div
-                        key={idx}
-                        className="relative h-48 bg-gray-200 rounded-lg overflow-hidden"
-                      >
-                        <Image
-                          src={image}
-                          alt={`${comp.address} - Photo ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 50vw, 33vw"
-                        />
-                      </div>
-                    ))}
+                    {comp.images && comp.images.length > 0 ? (
+                      comp.images.map((image: string, idx: number) => (
+                        <div
+                          key={idx}
+                          className="relative h-48 bg-gray-200 rounded-lg overflow-hidden"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={image}
+                            alt={`${comp.address} - Photo ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-sm col-span-3">No photos available</p>
+                    )}
                   </div>
                 </div>
               ))}
