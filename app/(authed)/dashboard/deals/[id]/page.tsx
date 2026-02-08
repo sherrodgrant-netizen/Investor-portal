@@ -4,25 +4,105 @@ import { useState, useMemo, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { getDealById } from "@/lib/mockDeals";
 import { ComparableAverages } from "@/types/deal";
 import PropertyMap from "@/components/PropertyMap";
+import ProfitCalculator, { InlineCalculatorContent } from "@/components/ProfitCalculator";
+
+// Deal type for API response
+interface Deal {
+  id: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  lat: number;
+  lng: number;
+  heroImage: string;
+  purchasePrice: number;
+  description: string;
+  dropboxLink: string;
+  characteristics: {
+    beds: number;
+    baths: number;
+    halfBaths: number;
+    sqft: number;
+    yearBuilt: string;
+    homeType: string;
+    garageSize: string;
+    garageAttached: boolean;
+    lotSize: string;
+  };
+  rehab: {
+    condition: string;
+    roofAge: string;
+    roofType: string;
+    foundationNotes: string;
+    hvacAge: string;
+    hvacType: string;
+    electricalNotes: string;
+    plumbingNotes: string;
+    estimatedRehabTotal: number;
+  };
+  arv: number;
+  comparables: any[];
+}
 
 export default function DealDetailPage() {
   const params = useParams();
   const dealId = params.id as string;
-  const deal = getDealById(dealId);
 
-  // Comp-based pricing calculations
+  const [deal, setDeal] = useState<Deal | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch deal from API
+  useEffect(() => {
+    async function fetchDeal() {
+      try {
+        const res = await fetch(`/api/deals/${dealId}`);
+        if (!res.ok) {
+          if (res.status === 404) {
+            setError("Deal not found");
+          } else {
+            setError("Failed to load deal");
+          }
+          return;
+        }
+        const data = await res.json();
+        setDeal(data.deal);
+      } catch (err) {
+        console.error("Failed to fetch deal:", err);
+        setError("Failed to load deal");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (dealId) {
+      fetchDeal();
+    }
+  }, [dealId]);
+
+  // Comp-based pricing calculations (uses ARV as fallback if no comparables)
   const compPrices = useMemo(() => {
-    if (!deal || deal.comparables.length === 0) {
+    if (!deal) {
       return { min: 0, max: 0, avg: 0 };
     }
-    const prices = deal.comparables.map((c) => c.salePrice);
+    // If we have comparables, use them
+    if (deal.comparables && deal.comparables.length > 0) {
+      const prices = deal.comparables.map((c: any) => c.salePrice);
+      return {
+        min: Math.min(...prices),
+        max: Math.max(...prices),
+        avg: Math.round(prices.reduce((sum: number, p: number) => sum + p, 0) / prices.length),
+      };
+    }
+    // Fallback: use ARV with +/- 10% range
+    const arv = deal.arv || deal.purchasePrice * 1.3;
     return {
-      min: Math.min(...prices),
-      max: Math.max(...prices),
-      avg: Math.round(prices.reduce((sum, p) => sum + p, 0) / prices.length),
+      min: Math.round(arv * 0.9),
+      max: Math.round(arv * 1.1),
+      avg: Math.round(arv),
     };
   }, [deal]);
 
@@ -37,13 +117,17 @@ export default function DealDetailPage() {
   );
   const [showContractorModal, setShowContractorModal] = useState(false);
   const [showAdvisorModal, setShowAdvisorModal] = useState(false);
+  const [showAdvancedCalc, setShowAdvancedCalc] = useState(false);
+  const [calcMode, setCalcMode] = useState<"flip" | "rental" | null>(null);
+  const [isCalcExpanded, setIsCalcExpanded] = useState(false);
+  const [calcContentVisible, setCalcContentVisible] = useState(false);
 
-  // Initialize assumed sale price when comp prices are calculated
+  // Initialize assumed sale price when deal loads or comp prices are calculated
   useEffect(() => {
     if (compPrices.avg > 0 && assumedSalePrice === 0) {
       setAssumedSalePrice(compPrices.avg);
     }
-  }, [compPrices.avg]);
+  }, [compPrices.avg, assumedSalePrice]);
 
   // Calculate rehab based on confidence
   const calculatedRehab = useMemo(() => {
@@ -61,15 +145,15 @@ export default function DealDetailPage() {
 
   // Calculate comparable averages
   const comparableAverages = useMemo((): ComparableAverages | null => {
-    if (!deal || deal.comparables.length === 0) return null;
+    if (!deal || !deal.comparables || deal.comparables.length === 0) return null;
 
     const comps = deal.comparables;
     const avg = {
-      beds: comps.reduce((sum, c) => sum + c.beds, 0) / comps.length,
-      baths: comps.reduce((sum, c) => sum + c.baths, 0) / comps.length,
-      sqft: Math.round(comps.reduce((sum, c) => sum + c.sqft, 0) / comps.length),
+      beds: comps.reduce((sum: number, c: any) => sum + c.beds, 0) / comps.length,
+      baths: comps.reduce((sum: number, c: any) => sum + c.baths, 0) / comps.length,
+      sqft: Math.round(comps.reduce((sum: number, c: any) => sum + c.sqft, 0) / comps.length),
       yearBuilt: Math.round(
-        comps.reduce((sum, c) => sum + c.yearBuilt, 0) / comps.length
+        comps.reduce((sum: number, c: any) => sum + c.yearBuilt, 0) / comps.length
       ),
       garageSize: "Mixed",
       lotSize: "Varies",
@@ -79,10 +163,42 @@ export default function DealDetailPage() {
     return avg;
   }, [deal]);
 
-  if (!deal) {
+  // Calculate profit range for confidence bar (moved before conditional returns)
+  const profitRange = useMemo(() => {
+    if (!deal) return { min: 0, max: 0 };
+    const conservativeRehab = Math.round(
+      (deal.rehab.estimatedRehabTotal || 0) * 1.2
+    );
+    const aggressiveRehab = Math.round(
+      (deal.rehab.estimatedRehabTotal || 0) * 0.85
+    );
+
+    const minProfit =
+      compPrices.min * (1 - closingCostPercent / 100) -
+      deal.purchasePrice -
+      conservativeRehab;
+    const maxProfit =
+      compPrices.max * (1 - closingCostPercent / 100) -
+      deal.purchasePrice -
+      aggressiveRehab;
+
+    return { min: minProfit, max: maxProfit };
+  }, [deal, compPrices, closingCostPercent]);
+
+  if (loading) {
+    return (
+      <div className="text-center py-16">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Loading Deal...</h2>
+        <p className="text-gray-600">Fetching details from Salesforce</p>
+      </div>
+    );
+  }
+
+  if (error || !deal) {
     return (
       <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Deal not found</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">{error || "Deal not found"}</h2>
         <Link
           href="/dashboard/deals"
           className="text-black hover:text-gray-700 underline"
@@ -107,28 +223,6 @@ export default function DealDetailPage() {
     const saleProceeds = assumedSalePrice * (1 - closingCostPercent / 100);
     return saleProceeds - deal.purchasePrice - calculatedRehab;
   };
-
-  // Calculate profit range for confidence bar
-  const profitRange = useMemo(() => {
-    if (!deal) return { min: 0, max: 0 };
-    const conservativeRehab = Math.round(
-      (deal.rehab.estimatedRehabTotal || 0) * 1.2
-    );
-    const aggressiveRehab = Math.round(
-      (deal.rehab.estimatedRehabTotal || 0) * 0.85
-    );
-
-    const minProfit =
-      compPrices.min * (1 - closingCostPercent / 100) -
-      deal.purchasePrice -
-      conservativeRehab;
-    const maxProfit =
-      compPrices.max * (1 - closingCostPercent / 100) -
-      deal.purchasePrice -
-      aggressiveRehab;
-
-    return { min: minProfit, max: maxProfit };
-  }, [deal, compPrices, closingCostPercent]);
 
   const getProfitZone = (profit: number) => {
     const dealSpread = compPrices.avg - (deal?.purchasePrice || 0);
@@ -505,20 +599,23 @@ export default function DealDetailPage() {
                     {comp.address}
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {comp.images.map((image, idx) => (
-                      <div
-                        key={idx}
-                        className="relative h-48 bg-gray-200 rounded-lg overflow-hidden"
-                      >
-                        <Image
-                          src={image}
-                          alt={`${comp.address} - Photo ${idx + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 50vw, 33vw"
-                        />
-                      </div>
-                    ))}
+                    {comp.images && comp.images.length > 0 ? (
+                      comp.images.map((image: string, idx: number) => (
+                        <div
+                          key={idx}
+                          className="relative h-48 bg-gray-200 rounded-lg overflow-hidden"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={image}
+                            alt={`${comp.address} - Photo ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-gray-500 text-sm col-span-3">No photos available</p>
+                    )}
                   </div>
                 </div>
               ))}
@@ -526,224 +623,72 @@ export default function DealDetailPage() {
           </section>
         </div>
 
-        {/* Right Column - Profit Calculator (Sticky) */}
+        {/* Right Column - Sticky */}
         <div className="lg:col-span-1">
-          <div className="space-y-6">
-            {/* CTA Above Calculator */}
+          <div className="sticky top-8 space-y-4">
             <button
               onClick={() => setShowAdvisorModal(true)}
-              className="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-800 transition-all duration-300 transform hover:scale-105 shadow-md"
+              className="w-full bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-all"
             >
-              Click for More Info
+              More Info
             </button>
 
-            {/* Enhanced Profit Calculator */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 sticky top-8">
+            {/* Deal Analysis */}
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                Profit Calculator
+                Deal Analysis
               </h2>
 
-              <div className="space-y-5">
-                {/* Purchase Price (Read-only) */}
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-1">Purchase Price</p>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {formatPrice(deal.purchasePrice)}
-                  </p>
-                </div>
-
-                {/* Comp-Based Sale Price Slider */}
-                <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <label className="block text-sm text-gray-600 mb-3">
-                    Assumed Sale Price (based on comps)
-                  </label>
-                  <div className="mb-3">
-                    <p className="text-2xl font-bold text-blue-600">
-                      {formatPrice(assumedSalePrice)}
-                    </p>
-                  </div>
-                  <input
-                    type="range"
-                    min={compPrices.min}
-                    max={compPrices.max}
-                    value={assumedSalePrice}
-                    onChange={(e) => setAssumedSalePrice(Number(e.target.value))}
-                    className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                  />
-                  <div className="flex justify-between text-xs text-gray-600 mt-2">
-                    <span>Low: {formatPrice(compPrices.min)}</span>
-                    <span>Avg: {formatPrice(compPrices.avg)}</span>
-                    <span>High: {formatPrice(compPrices.max)}</span>
-                  </div>
-                </div>
-
-                {/* Closing Cost Percentage Slider */}
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <label className="block text-sm text-gray-600 mb-3">
-                    Closing Costs (% of sale price)
-                  </label>
-                  <div className="mb-3">
-                    <p className="text-xl font-bold text-gray-900">
-                      {closingCostPercent.toFixed(1)}%
-                      <span className="text-sm font-normal text-gray-600 ml-2">
-                        ({formatPrice(assumedSalePrice * (closingCostPercent / 100))})
-                      </span>
-                    </p>
-                  </div>
-                  <input
-                    type="range"
-                    min={1.5}
-                    max={3.0}
-                    step={0.1}
-                    value={closingCostPercent}
-                    onChange={(e) => setClosingCostPercent(Number(e.target.value))}
-                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-slate-600"
-                  />
-                  <div className="flex justify-between text-xs text-gray-600 mt-2">
-                    <span>1.5%</span>
-                    <span>2.0%</span>
-                    <span>3.0%</span>
-                  </div>
-                </div>
-
-                {/* Rehab Confidence Selector */}
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <label className="block text-sm text-gray-600 mb-3">
-                    Rehab Confidence Level
-                  </label>
-                  <div className="grid grid-cols-3 gap-2 mb-3">
-                    <button
-                      onClick={() => {
-                        setRehabConfidence("conservative");
-                        setManualRehabOverride(null);
-                      }}
-                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                        rehabConfidence === "conservative"
-                          ? "bg-orange-500 text-white shadow-md"
-                          : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-                      }`}
-                    >
-                      Conservative
-                    </button>
-                    <button
-                      onClick={() => {
-                        setRehabConfidence("realistic");
-                        setManualRehabOverride(null);
-                      }}
-                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                        rehabConfidence === "realistic"
-                          ? "bg-blue-500 text-white shadow-md"
-                          : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-                      }`}
-                    >
-                      Realistic
-                    </button>
-                    <button
-                      onClick={() => {
-                        setRehabConfidence("aggressive");
-                        setManualRehabOverride(null);
-                      }}
-                      className={`py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                        rehabConfidence === "aggressive"
-                          ? "bg-green-500 text-white shadow-md"
-                          : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
-                      }`}
-                    >
-                      Aggressive
-                    </button>
-                  </div>
-                  <div className="mb-2">
-                    <p className="text-lg font-bold text-gray-900">
-                      {formatPrice(calculatedRehab)}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {rehabConfidence === "conservative" && "Base +20% buffer"}
-                      {rehabConfidence === "realistic" && "Base estimate"}
-                      {rehabConfidence === "aggressive" && "Base -15% optimistic"}
-                    </p>
-                  </div>
-
-                  {/* Manual Override Input */}
-                  <div className="mt-3 pt-3 border-t border-gray-200">
-                    <label className="block text-xs text-gray-500 mb-2">
-                      Or enter custom rehab amount:
-                    </label>
-                    <input
-                      type="number"
-                      value={manualRehabOverride ?? ""}
-                      onChange={(e) => {
-                        const val = e.target.value === "" ? null : Number(e.target.value);
-                        setManualRehabOverride(val);
-                      }}
-                      placeholder="Custom amount"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Profit Display with Confidence Range */}
-              <div className="mt-6 border-t border-gray-200 pt-6">
-                <div
-                  className={`p-6 rounded-lg transition-all duration-300 ${
-                    getProfitZone(calculateProfit()) === "green"
-                      ? "bg-gradient-to-r from-green-500 to-emerald-500"
-                      : getProfitZone(calculateProfit()) === "yellow"
-                      ? "bg-gradient-to-r from-yellow-500 to-amber-500"
-                      : "bg-gradient-to-r from-red-500 to-rose-500"
-                  }`}
-                >
-                  <p className="text-sm text-white mb-2">Projected Net Profit</p>
-                  <p className="text-4xl font-bold text-white">
-                    {formatPrice(calculateProfit())}
-                  </p>
-                </div>
-
-                {/* Profit Confidence Bar */}
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <p className="text-xs text-gray-600 mb-2 font-semibold">
-                    Profit Range (Confidence Spread)
-                  </p>
-                  <div className="relative h-6 bg-gradient-to-r from-red-400 via-yellow-400 to-green-400 rounded-full overflow-hidden">
-                    {/* Current profit indicator */}
-                    <div
-                      className="absolute top-0 bottom-0 w-1 bg-white shadow-lg"
-                      style={{
-                        left: `${Math.max(
-                          0,
-                          Math.min(
-                            100,
-                            ((calculateProfit() - profitRange.min) /
-                              (profitRange.max - profitRange.min)) *
-                              100
-                          )
-                        )}%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-600 mt-2">
-                    <span>Low: {formatPrice(profitRange.min)}</span>
-                    <span>High: {formatPrice(profitRange.max)}</span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    White line shows your current scenario
-                  </p>
-                </div>
-              </div>
-
-              {/* High-Intent CTA Below Profit */}
-              <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="space-y-3">
                 <button
-                  onClick={() => setShowAdvisorModal(true)}
-                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 px-6 rounded-lg font-bold text-lg hover:from-green-700 hover:to-emerald-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  onClick={() => {
+                    setCalcMode("flip");
+                    setIsCalcExpanded(true);
+                    setTimeout(() => setCalcContentVisible(true), 100);
+                  }}
+                  className="w-full bg-black text-white py-4 px-6 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-all flex items-center justify-between group"
                 >
-                  Ready to Buy? 🎯
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-all">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      </svg>
+                    </div>
+                    <span>Flip Analysis</span>
+                  </div>
+                  <svg className="w-5 h-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
                 </button>
-                <p className="text-xs text-gray-500 text-center mt-2">
-                  Connect with your advisor to move forward
-                </p>
+                <button
+                  onClick={() => {
+                    setCalcMode("rental");
+                    setIsCalcExpanded(true);
+                    setTimeout(() => setCalcContentVisible(true), 100);
+                  }}
+                  className="w-full bg-black text-white py-4 px-6 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-all flex items-center justify-between group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center group-hover:bg-white/20 transition-all">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                      </svg>
+                    </div>
+                    <span>Rental Analysis</span>
+                  </div>
+                  <svg className="w-5 h-5 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
               </div>
             </div>
+
+            <button
+              onClick={() => setShowAdvisorModal(true)}
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-6 rounded-lg font-bold hover:from-green-700 hover:to-emerald-700 transition-all"
+            >
+              Ready to Buy
+            </button>
           </div>
         </div>
       </div>
@@ -906,6 +851,28 @@ export default function DealDetailPage() {
           }
         }
 
+        @keyframes slideInLeft {
+          from {
+            transform: translateX(-60px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        @keyframes slideInRight {
+          from {
+            transform: translateX(60px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
         .animate-fadeIn {
           animation: fadeIn 0.3s ease-out;
         }
@@ -913,7 +880,148 @@ export default function DealDetailPage() {
         .animate-slideUp {
           animation: slideUp 0.4s ease-out;
         }
+
+        .animate-slideInLeft {
+          animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .animate-slideInRight {
+          animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
       `}</style>
+
+      {/* ====== DEAL ANALYSIS COMPARISON OVERLAY ====== */}
+      {isCalcExpanded && calcMode && deal && (
+        <div
+          className="fixed inset-0 z-50 flex items-stretch animate-fadeIn"
+          style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', backgroundColor: 'rgba(0,0,0,0.5)' }}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => {
+              setCalcContentVisible(false);
+              setTimeout(() => {
+                setIsCalcExpanded(false);
+                setCalcMode(null);
+              }, 150);
+            }}
+            className="absolute top-6 right-6 z-10 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-all"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <div className="w-full h-full grid grid-cols-2 gap-0 p-6 pt-16">
+            {/* LEFT SIDE — Deal Data (Purchase Price, Rehab, Comps) */}
+            <div className="overflow-y-auto pr-4 animate-slideInLeft" style={{ scrollbarWidth: 'thin' }}>
+              <div className="space-y-5 max-w-2xl mx-auto">
+                {/* Purchase Price Hero */}
+                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-200">
+                  <h3 className="text-sm text-gray-500 uppercase tracking-wide mb-2">Purchase Price</h3>
+                  <p className="text-4xl font-bold text-gray-900">{formatPrice(deal.purchasePrice)}</p>
+                  <div className="grid grid-cols-3 gap-3 mt-4">
+                    <div className="p-3 bg-gray-50 rounded-lg text-center">
+                      <p className="text-xs text-gray-500">Beds</p>
+                      <p className="text-lg font-bold text-gray-900">{deal.characteristics.beds}</p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-lg text-center">
+                      <p className="text-xs text-gray-500">Baths</p>
+                      <p className="text-lg font-bold text-gray-900">{deal.characteristics.baths}</p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-lg text-center">
+                      <p className="text-xs text-gray-500">Sqft</p>
+                      <p className="text-lg font-bold text-gray-900">{deal.characteristics.sqft.toLocaleString()}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ARV */}
+                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-200">
+                  <h3 className="text-sm text-gray-500 uppercase tracking-wide mb-2">After Repair Value (ARV)</h3>
+                  <p className="text-3xl font-bold text-green-600">{formatPrice(deal.arv || deal.purchasePrice * 1.3)}</p>
+                  <div className="flex items-center gap-4 mt-3 text-sm text-gray-600">
+                    <span>Range: {formatPrice(compPrices.min)} — {formatPrice(compPrices.max)}</span>
+                  </div>
+                </div>
+
+                {/* Rehab */}
+                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm text-gray-500 uppercase tracking-wide">Rehab Estimate</h3>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getConditionColor(deal.rehab.condition)}`}>
+                      {deal.rehab.condition}
+                    </span>
+                  </div>
+                  <p className="text-3xl font-bold text-blue-600 mb-4">{formatPrice(deal.rehab.estimatedRehabTotal)}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-xs text-gray-500">Roof Age</p>
+                      <p className="text-sm font-bold text-gray-900">{deal.rehab.roofAge} yrs</p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-xs text-gray-500">Foundation</p>
+                      <p className="text-sm font-bold text-gray-900">{deal.rehab.foundationNotes}</p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-xs text-gray-500">HVAC Age</p>
+                      <p className="text-sm font-bold text-gray-900">{deal.rehab.hvacAge} yrs</p>
+                    </div>
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-xs text-gray-500">Additional</p>
+                      <p className="text-xs text-gray-700">{[deal.rehab.electricalNotes, deal.rehab.plumbingNotes].filter(Boolean).join(". ")}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Comparables */}
+                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-200">
+                  <h3 className="text-sm text-gray-500 uppercase tracking-wide mb-4">Comparables</h3>
+                  <div className="space-y-3">
+                    {deal.comparables.map((comp) => (
+                      <div key={comp.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{comp.address}</p>
+                          <p className="text-xs text-gray-500">{comp.beds}bd / {comp.baths}ba / {comp.sqft.toLocaleString()} sqft</p>
+                        </div>
+                        <p className="text-lg font-bold text-gray-900">{formatPrice(comp.salePrice)}</p>
+                      </div>
+                    ))}
+                    {/* Averages */}
+                    <div className="flex items-center justify-between p-3 bg-black text-white rounded-lg">
+                      <div>
+                        <p className="text-sm font-medium">Average Comp Price</p>
+                      </div>
+                      <p className="text-lg font-bold">{formatPrice(compPrices.avg)}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* RIGHT SIDE — Calculator */}
+            <div className="overflow-y-auto pl-4 animate-slideInRight" style={{ scrollbarWidth: 'thin' }}>
+              <div className="max-w-2xl mx-auto bg-white rounded-2xl p-6 shadow-xl border border-gray-200">
+                <InlineCalculatorContent
+                  purchasePrice={deal.purchasePrice}
+                  estimatedRehab={deal.rehab?.estimatedRehabTotal || 0}
+                  arv={deal.arv || deal.purchasePrice * 1.3}
+                  arvRange={compPrices}
+                  annualTaxes={Math.round(deal.purchasePrice * 0.02)}
+                  mode={calcMode}
+                  onBack={() => {
+                    setCalcContentVisible(false);
+                    setTimeout(() => {
+                      setIsCalcExpanded(false);
+                      setCalcMode(null);
+                    }, 150);
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
+import { useCallback, useState } from "react";
+import { GoogleMap, useJsApiLoader, Marker, Circle } from "@react-google-maps/api";
 
 interface PropertyMapProps {
   center: [number, number]; // [lng, lat]
@@ -11,118 +10,47 @@ interface PropertyMapProps {
   className?: string;
 }
 
+const containerStyle = {
+  width: "100%",
+  height: "100%",
+};
+
 export default function PropertyMap({
   center,
   markers = [],
   radius,
   className = "",
 }: PropertyMapProps) {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
 
-  const token = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  useEffect(() => {
-    if (!token || !mapContainer.current || map.current) return;
+  const { isLoaded, loadError } = useJsApiLoader({
+    id: "google-map-script",
+    googleMapsApiKey: apiKey || "",
+  });
 
-    mapboxgl.accessToken = token;
-
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: "mapbox://styles/mapbox/streets-v12",
-      center: center,
-      zoom: 13,
-    });
-
-    // Add markers
-    markers.forEach((marker) => {
-      const el = document.createElement("div");
-      el.className = "w-6 h-6 rounded-full border-2 border-white shadow-lg";
-      el.style.backgroundColor = marker.color || "#3B82F6";
-
-      new mapboxgl.Marker(el)
-        .setLngLat([marker.lng, marker.lat])
-        .setPopup(
-          marker.label
-            ? new mapboxgl.Popup({ offset: 25 }).setText(marker.label)
-            : undefined
-        )
-        .addTo(map.current!);
-    });
-
-    // Add radius circle if specified
-    if (radius && map.current) {
-      map.current.on("load", () => {
-        const radiusInMeters = radius * 1609.34; // Convert miles to meters
-        const steps = 64;
-        const coordinates: [number, number][] = [];
-
-        for (let i = 0; i < steps; i++) {
-          const angle = (i / steps) * 2 * Math.PI;
-          const dx = radiusInMeters * Math.cos(angle);
-          const dy = radiusInMeters * Math.sin(angle);
-
-          const lat =
-            center[1] + (dy / 111320); // 1 degree latitude ≈ 111.32 km
-          const lng =
-            center[0] + (dx / (111320 * Math.cos((center[1] * Math.PI) / 180)));
-
-          coordinates.push([lng, lat]);
-        }
-        coordinates.push(coordinates[0]); // Close the circle
-
-        map.current!.addSource("radius", {
-          type: "geojson",
-          data: {
-            type: "Feature",
-            geometry: {
-              type: "Polygon",
-              coordinates: [coordinates],
-            },
-            properties: {},
-          },
-        });
-
-        map.current!.addLayer({
-          id: "radius",
-          type: "fill",
-          source: "radius",
-          paint: {
-            "fill-color": "#3B82F6",
-            "fill-opacity": 0.15,
-          },
-        });
-
-        map.current!.addLayer({
-          id: "radius-outline",
-          type: "line",
-          source: "radius",
-          paint: {
-            "line-color": "#3B82F6",
-            "line-width": 2,
-            "line-dasharray": [2, 2],
-          },
-        });
-      });
-    }
-
-    // Fit bounds to show all markers
-    if (markers.length > 1 && map.current) {
-      const bounds = new mapboxgl.LngLatBounds();
+  const onLoad = useCallback((map: google.maps.Map) => {
+    // Fit bounds to show all markers if multiple
+    if (markers.length > 1) {
+      const bounds = new google.maps.LatLngBounds();
       markers.forEach((marker) => {
-        bounds.extend([marker.lng, marker.lat]);
+        bounds.extend({ lat: marker.lat, lng: marker.lng });
       });
-      map.current.fitBounds(bounds, { padding: 50 });
+      map.fitBounds(bounds, 50);
     }
+    setMap(map);
+  }, [markers]);
 
-    return () => {
-      map.current?.remove();
-      map.current = null;
-    };
-  }, [center, markers, radius, token]);
+  const onUnmount = useCallback(() => {
+    setMap(null);
+  }, []);
 
-  // Fallback when no token
-  if (!token) {
+  // Google Maps center is { lat, lng } format
+  const mapCenter = { lat: center[1], lng: center[0] };
+
+  // Fallback when no API key
+  if (!apiKey) {
     return (
       <div
         className={`bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center ${className}`}
@@ -145,12 +73,80 @@ export default function PropertyMap({
           </div>
           <p className="text-gray-600 font-medium">Map Unavailable</p>
           <p className="text-sm text-gray-500 mt-1">
-            Set NEXT_PUBLIC_MAPBOX_TOKEN to enable maps
+            Set NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to enable maps
           </p>
         </div>
       </div>
     );
   }
 
-  return <div ref={mapContainer} className={className} />;
+  if (loadError) {
+    return (
+      <div className={`bg-gray-100 flex items-center justify-center ${className}`}>
+        <p className="text-red-500">Error loading map</p>
+      </div>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className={`bg-gray-100 flex items-center justify-center ${className}`}>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={className}>
+      <GoogleMap
+        mapContainerStyle={containerStyle}
+        center={mapCenter}
+        zoom={14}
+        onLoad={onLoad}
+        onUnmount={onUnmount}
+        options={{
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true,
+          zoomControl: true,
+        }}
+      >
+        {/* Render markers */}
+        {markers.map((marker, idx) => (
+          <Marker
+            key={idx}
+            position={{ lat: marker.lat, lng: marker.lng }}
+            title={marker.label}
+            icon={
+              marker.color
+                ? {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: marker.color,
+                    fillOpacity: 1,
+                    strokeColor: "#ffffff",
+                    strokeWeight: 2,
+                  }
+                : undefined
+            }
+          />
+        ))}
+
+        {/* Render radius circle if specified */}
+        {radius && (
+          <Circle
+            center={mapCenter}
+            radius={radius * 1609.34} // Convert miles to meters
+            options={{
+              fillColor: "#3B82F6",
+              fillOpacity: 0.15,
+              strokeColor: "#3B82F6",
+              strokeWeight: 2,
+              strokeOpacity: 0.8,
+            }}
+          />
+        )}
+      </GoogleMap>
+    </div>
+  );
 }

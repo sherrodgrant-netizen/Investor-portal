@@ -7,139 +7,77 @@ import PropertyMap from "@/components/PropertyMap";
 
 type PropertyType = "All Deals" | "Single Family" | "Multi Family" | "Land" | "Commercial";
 
+interface Deal {
+  id: string;
+  image: string;
+  address: string;
+  beds: number;
+  baths: number;
+  sqft: number;
+  yearBuilt: string;
+  purchasePrice: number;
+  arv: number;
+  description: string;
+  dropboxLink: string;
+  homeType: PropertyType;
+  lat: number;
+  lng: number;
+  county: string;
+}
+
 export default function DealsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<PropertyType>("All Deals");
   const [showMap, setShowMap] = useState(false);
+  const [deals, setDeals] = useState<Deal[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  // Fetch deals from Salesforce API
   useEffect(() => {
     setMounted(true);
-  }, []);
 
-  const deals = [
-    {
-      id: 1,
-      image: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80",
-      address: "1234 Maple Street, Austin, TX 78701",
-      beds: 4,
-      baths: 3,
-      sqft: 2400,
-      yearBuilt: 2018,
-      purchasePrice: 485000,
-      arv: 650000,
-      description: "Beautiful 4-bedroom home in the heart of Austin. Features modern updates, open floor plan, and a spacious backyard perfect for entertaining. Located in a highly desirable neighborhood with excellent schools.",
-      dropboxLink: "https://www.dropbox.com/sh/example1/photos",
-      roofAge: 6,
-      foundationRepair: false,
-      hvacAge: 4,
-      homeType: "Single Family" as PropertyType,
-      lat: 30.2672,
-      lng: -97.7431,
-    },
-    {
-      id: 2,
-      image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800&q=80",
-      address: "5678 Oak Avenue, Dallas, TX 75201",
-      beds: 3,
-      baths: 2,
-      sqft: 1850,
-      yearBuilt: 2020,
-      purchasePrice: 395000,
-      arv: 520000,
-      description: "Stunning contemporary home in prime Dallas location. Recently built with energy-efficient features, granite countertops, and hardwood floors throughout. Close to downtown and major highways.",
-      dropboxLink: "https://www.dropbox.com/sh/example2/photos",
-      roofAge: 4,
-      foundationRepair: false,
-      hvacAge: 3,
-      homeType: "Single Family" as PropertyType,
-      lat: 32.7767,
-      lng: -96.7970,
-    },
-    {
-      id: 3,
-      image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=800&q=80",
-      address: "9012 Pine Boulevard, Houston, TX 77002",
-      beds: 5,
-      baths: 4,
-      sqft: 3200,
-      yearBuilt: 2019,
-      purchasePrice: 625000,
-      arv: 825000,
-      description: "Luxurious 5-bedroom estate with high-end finishes. Features include a gourmet kitchen, master suite with spa-like bathroom, and beautifully landscaped grounds. Perfect for growing families.",
-      dropboxLink: "https://www.dropbox.com/sh/example3/photos",
-      roofAge: 5,
-      foundationRepair: true,
-      hvacAge: 5,
-      homeType: "Single Family" as PropertyType,
-      lat: 29.7604,
-      lng: -95.3698,
-    },
-    {
-      id: 4,
-      image: "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?w=800&q=80",
-      address: "3456 Cedar Lane, San Antonio, TX 78205",
-      beds: 3,
-      baths: 2.5,
-      sqft: 2100,
-      yearBuilt: 2021,
-      purchasePrice: 425000,
-      arv: 550000,
-      description: "Modern townhome in vibrant San Antonio neighborhood. Open concept living with designer finishes, smart home features, and a private patio. Walking distance to shops and restaurants.",
-      dropboxLink: "https://www.dropbox.com/sh/example4/photos",
-      roofAge: 3,
-      foundationRepair: false,
-      hvacAge: 2,
-      homeType: "Multi Family" as PropertyType,
-      lat: 29.4241,
-      lng: -98.4936,
-    },
-    {
-      id: 5,
-      image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
-      address: "7890 Birch Court, Fort Worth, TX 76102",
-      beds: 4,
-      baths: 3.5,
-      sqft: 2800,
-      yearBuilt: 2022,
-      purchasePrice: 550000,
-      arv: 720000,
-      description: "Brand new construction in sought-after Fort Worth community. Features include quartz countertops, stainless steel appliances, and a spacious master closet. Move-in ready with builder warranty.",
-      dropboxLink: "https://www.dropbox.com/sh/example5/photos",
-      roofAge: 2,
-      foundationRepair: false,
-      hvacAge: 1,
-      homeType: "Single Family" as PropertyType,
-      lat: 32.7555,
-      lng: -97.3308,
-    },
-    {
-      id: 6,
-      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
-      address: "2468 Elm Drive, Plano, TX 75023",
-      beds: 3,
-      baths: 2,
-      sqft: 1650,
-      yearBuilt: 2017,
-      purchasePrice: 365000,
-      arv: 475000,
-      description: "Charming single-story home in family-friendly Plano. Updated kitchen and bathrooms, large backyard with mature trees, and oversized garage. Excellent Plano schools and close to parks.",
-      dropboxLink: "https://www.dropbox.com/sh/example6/photos",
-      roofAge: 7,
-      foundationRepair: true,
-      hvacAge: 8,
-      homeType: "Single Family" as PropertyType,
-      lat: 33.0198,
-      lng: -96.6989,
-    },
-  ];
+    async function fetchDeals() {
+      try {
+        const res = await fetch("/api/deals");
+        const data = await res.json();
+
+        // Transform API response to match our Deal interface
+        const transformedDeals: Deal[] = (data.records || []).map((record: any) => ({
+          id: record.Id,
+          image: record.imageUrl || "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800&q=80",
+          address: `${record.DACQ_Address__c || ""}, ${record.DACQ_City__c || ""}, ${record.DACQ_State__c || ""} ${record.DACQ_Zip__c || ""}`.trim(),
+          beds: parseInt(record.DACQ_Beds__c) || 0,
+          baths: parseInt(record.DACQ_Baths__c) || 0,
+          sqft: record.DACQ_Sqft__c || 0,
+          yearBuilt: record.yearBuilt || "N/A",
+          purchasePrice: record.DACQ_Price__c || 0,
+          arv: record.DACQ_ARV__c || 0,
+          description: "",
+          dropboxLink: record.DACQ_Packet_URL__c || "",
+          homeType: "Single Family" as PropertyType,
+          lat: 32.7767, // Default Dallas coords - will be updated when we have real geocoding
+          lng: -96.7970,
+          county: record.county || "",
+        }));
+
+        setDeals(transformedDeals);
+      } catch (error) {
+        console.error("Failed to fetch deals:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchDeals();
+  }, []);
 
   const categories: PropertyType[] = ["All Deals", "Single Family", "Multi Family", "Land", "Commercial"];
 
   const filteredDeals = useMemo(() => {
     if (selectedCategory === "All Deals") return deals;
     return deals.filter((deal) => deal.homeType === selectedCategory);
-  }, [selectedCategory]);
+  }, [selectedCategory, deals]);
 
   const categoryStats = useMemo(() => {
     return {
@@ -149,7 +87,7 @@ export default function DealsPage() {
       "Land": deals.filter((d) => d.homeType === "Land").length,
       "Commercial": deals.filter((d) => d.homeType === "Commercial").length,
     };
-  }, []);
+  }, [deals]);
 
   const salesAgent = {
     name: "Sarah Johnson",
@@ -311,7 +249,13 @@ export default function DealsPage() {
           mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         }`}
       >
-        {filteredDeals.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-16 bg-white rounded-lg shadow-md border border-gray-200">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Loading Deals from Salesforce...</h3>
+            <p className="text-gray-600">Connecting to your sandbox</p>
+          </div>
+        ) : filteredDeals.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-lg shadow-md border border-gray-200">
             <h3 className="text-2xl font-bold text-gray-900 mb-2">No {selectedCategory} Deals Available</h3>
             <p className="text-gray-600">Check back soon for new opportunities!</p>
