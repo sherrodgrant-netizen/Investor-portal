@@ -7,6 +7,7 @@ import { BuyerInfo, ReadyToBuyData } from "@/types/ready-to-buy";
 import BuyerQuestionnaire from "@/components/ready-to-buy/BuyerQuestionnaire";
 import ContractAndWire from "@/components/ready-to-buy/ContractAndWire";
 import Confirmation from "@/components/ready-to-buy/Confirmation";
+import CelebrationOverlay from "@/components/ready-to-buy/CelebrationOverlay";
 
 interface DealSummary {
   id: string;
@@ -24,6 +25,7 @@ export default function ReadyToBuyPage() {
   const [loading, setLoading] = useState(true);
   const [buyerInfo, setBuyerInfo] = useState<BuyerInfo | null>(null);
   const [submissionData, setSubmissionData] = useState<ReadyToBuyData | null>(null);
+  const [celebrating, setCelebrating] = useState(false);
 
   useEffect(() => {
     const fetchDeal = async () => {
@@ -67,6 +69,11 @@ export default function ReadyToBuyPage() {
       wireImageUrl: data.wireImageUrl,
     };
     setSubmissionData(submission);
+    setCelebrating(true);
+  };
+
+  const handleCelebrationComplete = () => {
+    setCelebrating(false);
     setStep(3);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -94,30 +101,30 @@ export default function ReadyToBuyPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <Link
-          href={`/dashboard/deals/${dealId}`}
-          className="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1 mb-4 transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to deal
-        </Link>
+      {/* Header — hidden on confirmation step */}
+      {step < 3 && (
+        <div className="mb-8">
+          <Link
+            href={`/dashboard/deals/${dealId}`}
+            className="text-sm text-gray-500 hover:text-gray-900 flex items-center gap-1 mb-4 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to deal
+          </Link>
 
-        <div className="flex items-start justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Ready to Buy</h1>
-            <p className="text-gray-600 mt-1">{deal.address}, {deal.city}, {deal.state} {deal.zip}</p>
-            <p className="text-2xl font-bold text-gray-900 mt-1">
-              {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(deal.purchasePrice)}
-            </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Ready to Buy</h1>
+              <p className="text-gray-600 mt-1">{deal.address}, {deal.city}, {deal.state} {deal.zip}</p>
+              <p className="text-2xl font-bold text-gray-900 mt-1">
+                {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(deal.purchasePrice)}
+              </p>
+            </div>
           </div>
-        </div>
 
-        {/* Progress Steps */}
-        {step < 3 && (
+          {/* Progress Steps */}
           <div className="flex items-center gap-2 mt-6">
             {[
               { num: 1, label: "Buyer Info" },
@@ -145,8 +152,8 @@ export default function ReadyToBuyPage() {
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Step Content */}
       {step === 1 && (
@@ -179,6 +186,9 @@ export default function ReadyToBuyPage() {
           purchasePrice={deal.purchasePrice}
         />
       )}
+
+      {/* Celebration Animation */}
+      {celebrating && <CelebrationOverlay onComplete={handleCelebrationComplete} />}
     </div>
   );
 }

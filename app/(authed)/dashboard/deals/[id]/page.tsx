@@ -7,6 +7,7 @@ import Image from "next/image";
 import { ComparableAverages } from "@/types/deal";
 import PropertyMap from "@/components/PropertyMap";
 import ProfitCalculator, { InlineCalculatorContent } from "@/components/ProfitCalculator";
+import ReadyToBuyOverlay from "@/components/ready-to-buy/ReadyToBuyOverlay";
 
 // Deal type for API response
 interface Deal {
@@ -119,6 +120,7 @@ export default function DealDetailPage() {
   const [showContractorModal, setShowContractorModal] = useState(false);
   const [showAdvisorModal, setShowAdvisorModal] = useState(false);
   const [showAdvancedCalc, setShowAdvancedCalc] = useState(false);
+  const [showReadyToBuy, setShowReadyToBuy] = useState(false);
   const [calcMode, setCalcMode] = useState<"flip" | "rental" | null>(null);
   const [isCalcExpanded, setIsCalcExpanded] = useState(false);
   const [calcContentVisible, setCalcContentVisible] = useState(false);
@@ -697,7 +699,7 @@ export default function DealDetailPage() {
             })()}
 
             <button
-              onClick={() => router.push(`/dashboard/deals/${dealId}/ready-to-buy`)}
+              onClick={() => setShowReadyToBuy(true)}
               className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-6 rounded-lg font-bold hover:from-green-700 hover:to-emerald-700 transition-all"
             >
               Ready to Buy
@@ -902,6 +904,19 @@ export default function DealDetailPage() {
           animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
       `}</style>
+
+      {/* ====== READY TO BUY OVERLAY ====== */}
+      {showReadyToBuy && deal && (
+        <ReadyToBuyOverlay
+          dealId={dealId}
+          address={deal.address}
+          city={deal.city}
+          state={deal.state}
+          zip={deal.zip}
+          purchasePrice={deal.purchasePrice}
+          onClose={() => setShowReadyToBuy(false)}
+        />
+      )}
 
       {/* ====== DEAL ANALYSIS COMPARISON OVERLAY ====== */}
       {isCalcExpanded && calcMode && deal && (

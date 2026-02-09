@@ -7,9 +7,10 @@ interface ConfirmationProps {
   data: ReadyToBuyData;
   propertyAddress: string;
   purchasePrice: number;
+  onClose?: () => void;
 }
 
-export default function Confirmation({ data, propertyAddress, purchasePrice }: ConfirmationProps) {
+export default function Confirmation({ data, propertyAddress, purchasePrice, onClose }: ConfirmationProps) {
   const formatCurrency = (val: number) =>
     new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(val);
 
@@ -102,27 +103,32 @@ export default function Confirmation({ data, propertyAddress, purchasePrice }: C
           </li>
           <li className="flex items-start gap-3">
             <span className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
-            <p className="text-sm text-gray-700">Title company opens escrow and begins the closing process</p>
+            <p className="text-sm text-gray-700">Once everything is approved all docs get sent to title</p>
           </li>
           <li className="flex items-start gap-3">
             <span className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
             <p className="text-sm text-gray-700">You receive closing documents for final review and signature</p>
-          </li>
-          <li className="flex items-start gap-3">
-            <span className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
-            <p className="text-sm text-gray-700">Property is yours — keys are handed over at closing</p>
           </li>
         </ol>
       </div>
 
       {/* Actions */}
       <div className="flex gap-4 justify-center">
-        <Link
-          href="/dashboard/deals"
-          className="px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all"
-        >
-          Back to Deals
-        </Link>
+        {onClose ? (
+          <button
+            onClick={onClose}
+            className="px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all"
+          >
+            Back to Deal
+          </button>
+        ) : (
+          <Link
+            href="/dashboard/deals"
+            className="px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all"
+          >
+            Back to Deals
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -50,7 +50,7 @@ export default function ContractAndWire({
       {/* Back button */}
       <button
         onClick={onBack}
-        className="text-gray-600 hover:text-gray-900 text-sm flex items-center gap-2 transition-colors"
+        className="text-white/60 hover:text-white text-sm flex items-center gap-2 transition-colors"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
