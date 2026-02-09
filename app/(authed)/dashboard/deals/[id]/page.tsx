@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ComparableAverages } from "@/types/deal";
@@ -49,6 +49,7 @@ interface Deal {
 
 export default function DealDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const dealId = params.id as string;
 
   const [deal, setDeal] = useState<Deal | null>(null);
@@ -696,7 +697,7 @@ export default function DealDetailPage() {
             })()}
 
             <button
-              onClick={() => setShowAdvisorModal(true)}
+              onClick={() => router.push(`/dashboard/deals/${dealId}/ready-to-buy`)}
               className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-6 rounded-lg font-bold hover:from-green-700 hover:to-emerald-700 transition-all"
             >
               Ready to Buy
