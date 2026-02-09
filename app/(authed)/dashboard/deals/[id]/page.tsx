@@ -628,9 +628,9 @@ export default function DealDetailPage() {
           <div className="sticky top-8 space-y-4">
             <button
               onClick={() => setShowAdvisorModal(true)}
-              className="w-full bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800 transition-all"
+              className="w-full bg-black text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-800 transition-all"
             >
-              More Info
+              Want more info?
             </button>
 
             {/* Deal Analysis */}
@@ -682,6 +682,18 @@ export default function DealDetailPage() {
                 </button>
               </div>
             </div>
+
+            {/* Potential Flip Profit */}
+            {deal && (() => {
+              const estimatedProfit = compPrices.avg - deal.purchasePrice - (deal.rehab.estimatedRehabTotal || 0) - (compPrices.avg * 0.05) - (deal.purchasePrice * 0.02);
+              return estimatedProfit > 0 ? (
+                <div className="profit-glow bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-4 text-center cursor-pointer transition-all duration-300 hover:shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:border-green-400 active:shadow-[0_0_30px_rgba(16,185,129,0.6),0_0_60px_rgba(16,185,129,0.3)] active:scale-[1.02]">
+                  <p className="text-xs font-semibold text-green-600 uppercase tracking-wider mb-1">Estimated Flip Profit</p>
+                  <p className="text-3xl font-bold text-green-700">{formatPrice(estimatedProfit)}</p>
+                  <p className="text-xs text-gray-500 mt-1">Based on avg comp ARV of {formatPrice(compPrices.avg)}</p>
+                </div>
+              ) : null;
+            })()}
 
             <button
               onClick={() => setShowAdvisorModal(true)}
@@ -920,28 +932,27 @@ export default function DealDetailPage() {
                 <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-200">
                   <h3 className="text-sm text-gray-500 uppercase tracking-wide mb-2">Purchase Price</h3>
                   <p className="text-4xl font-bold text-gray-900">{formatPrice(deal.purchasePrice)}</p>
-                  <div className="grid grid-cols-3 gap-3 mt-4">
-                    <div className="p-3 bg-gray-50 rounded-lg text-center">
+                  <div className="grid grid-cols-5 gap-2 mt-4">
+                    <div className="p-2 bg-gray-50 rounded-lg text-center">
                       <p className="text-xs text-gray-500">Beds</p>
-                      <p className="text-lg font-bold text-gray-900">{deal.characteristics.beds}</p>
+                      <p className="text-sm font-bold text-gray-900">{deal.characteristics.beds}</p>
                     </div>
-                    <div className="p-3 bg-gray-50 rounded-lg text-center">
+                    <div className="p-2 bg-gray-50 rounded-lg text-center">
                       <p className="text-xs text-gray-500">Baths</p>
-                      <p className="text-lg font-bold text-gray-900">{deal.characteristics.baths}</p>
+                      <p className="text-sm font-bold text-gray-900">{deal.characteristics.baths}</p>
                     </div>
-                    <div className="p-3 bg-gray-50 rounded-lg text-center">
+                    <div className="p-2 bg-gray-50 rounded-lg text-center">
                       <p className="text-xs text-gray-500">Sqft</p>
-                      <p className="text-lg font-bold text-gray-900">{deal.characteristics.sqft.toLocaleString()}</p>
+                      <p className="text-sm font-bold text-gray-900">{deal.characteristics.sqft.toLocaleString()}</p>
                     </div>
-                  </div>
-                </div>
-
-                {/* ARV */}
-                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-200">
-                  <h3 className="text-sm text-gray-500 uppercase tracking-wide mb-2">After Repair Value (ARV)</h3>
-                  <p className="text-3xl font-bold text-green-600">{formatPrice(deal.arv || deal.purchasePrice * 1.3)}</p>
-                  <div className="flex items-center gap-4 mt-3 text-sm text-gray-600">
-                    <span>Range: {formatPrice(compPrices.min)} — {formatPrice(compPrices.max)}</span>
+                    <div className="p-2 bg-gray-50 rounded-lg text-center">
+                      <p className="text-xs text-gray-500">Lot</p>
+                      <p className="text-sm font-bold text-gray-900">{deal.characteristics.lotSize || "—"}</p>
+                    </div>
+                    <div className="p-2 bg-gray-50 rounded-lg text-center">
+                      <p className="text-xs text-gray-500">Built</p>
+                      <p className="text-sm font-bold text-gray-900">{deal.characteristics.yearBuilt || "—"}</p>
+                    </div>
                   </div>
                 </div>
 

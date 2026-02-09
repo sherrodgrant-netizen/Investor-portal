@@ -1001,16 +1001,16 @@ export function InlineCalculatorContent({
               <h4 className="font-semibold text-gray-900 mb-3">Hard Money Terms</h4>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Down %</label>
-                  <input type="number" value={hmDownPayment} onChange={(e) => setHmDownPayment(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                  <label className="block text-xs text-gray-700 font-medium mb-1">Down %</label>
+                  <input type="number" value={hmDownPayment} onChange={(e) => setHmDownPayment(Number(e.target.value))} className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Rate %</label>
-                  <input type="number" step="0.5" value={hmInterestRate} onChange={(e) => setHmInterestRate(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                  <label className="block text-xs text-gray-700 font-medium mb-1">Rate %</label>
+                  <input type="number" step="0.5" value={hmInterestRate} onChange={(e) => setHmInterestRate(Number(e.target.value))} className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Points</label>
-                  <input type="number" step="0.5" value={hmPoints} onChange={(e) => setHmPoints(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                  <label className="block text-xs text-gray-700 font-medium mb-1">Points</label>
+                  <input type="number" step="0.5" value={hmPoints} onChange={(e) => setHmPoints(Number(e.target.value))} className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3 pt-2">
@@ -1122,24 +1122,24 @@ export function InlineCalculatorContent({
             <h4 className="font-semibold text-gray-900 mb-4">DSCR Loan Terms</h4>
             <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Down Payment %</label>
-                <input type="number" value={dscrDownPayment} onChange={(e) => setDscrDownPayment(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                <label className="block text-xs text-gray-700 font-medium mb-1">Down Payment %</label>
+                <input type="number" value={dscrDownPayment} onChange={(e) => setDscrDownPayment(Number(e.target.value))} className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Interest Rate %</label>
-                <input type="number" step="0.125" value={dscrInterestRate} onChange={(e) => setDscrInterestRate(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                <label className="block text-xs text-gray-700 font-medium mb-1">Interest Rate %</label>
+                <input type="number" step="0.125" value={dscrInterestRate} onChange={(e) => setDscrInterestRate(Number(e.target.value))} className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Loan Term (years)</label>
-                <select value={dscrLoanTerm} onChange={(e) => setDscrLoanTerm(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white">
+                <label className="block text-xs text-gray-700 font-medium mb-1">Loan Term (years)</label>
+                <select value={dscrLoanTerm} onChange={(e) => setDscrLoanTerm(Number(e.target.value))} className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent bg-white">
                   <option value={15}>15 years</option>
                   <option value={20}>20 years</option>
                   <option value={30}>30 years</option>
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Points</label>
-                <input type="number" step="0.5" value={dscrPoints} onChange={(e) => setDscrPoints(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                <label className="block text-xs text-gray-700 font-medium mb-1">Points</label>
+                <input type="number" step="0.5" value={dscrPoints} onChange={(e) => setDscrPoints(Number(e.target.value))} className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
               </div>
             </div>
             <div className="grid grid-cols-3 gap-2 pt-2 border-t border-gray-200">
@@ -1163,31 +1163,31 @@ export function InlineCalculatorContent({
             <h4 className="font-semibold text-gray-900 mb-4">Rental Analysis</h4>
             <div className="grid grid-cols-2 gap-3 mb-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Monthly Rent</label>
+                <label className="block text-xs text-gray-700 font-medium mb-1">Monthly Rent</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
-                  <input type="number" value={monthlyRent} onChange={(e) => setMonthlyRent(Number(e.target.value))} className="w-full px-3 py-2 pl-7 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                  <input type="number" value={monthlyRent} onChange={(e) => setMonthlyRent(Number(e.target.value))} className="w-full px-3 py-2 pl-7 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
                 </div>
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Mgmt %</label>
-                <input type="number" value={propertyMgmtPercent} onChange={(e) => setPropertyMgmtPercent(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                <label className="block text-xs text-gray-700 font-medium mb-1">Mgmt %</label>
+                <input type="number" value={propertyMgmtPercent} onChange={(e) => setPropertyMgmtPercent(Number(e.target.value))} className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Maintenance %</label>
-                <input type="number" value={maintenancePercent} onChange={(e) => setMaintenancePercent(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                <label className="block text-xs text-gray-700 font-medium mb-1">Maintenance %</label>
+                <input type="number" value={maintenancePercent} onChange={(e) => setMaintenancePercent(Number(e.target.value))} className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
               </div>
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Vacancy %</label>
-                <input type="number" value={vacancyPercent} onChange={(e) => setVacancyPercent(Number(e.target.value))} className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                <label className="block text-xs text-gray-700 font-medium mb-1">Vacancy %</label>
+                <input type="number" value={vacancyPercent} onChange={(e) => setVacancyPercent(Number(e.target.value))} className="w-full px-3 py-2 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-gray-500 mb-1">Monthly HOA</label>
+                <label className="block text-xs text-gray-700 font-medium mb-1">Monthly HOA</label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
-                  <input type="number" value={monthlyHoa} onChange={(e) => setMonthlyHoa(Number(e.target.value))} className="w-full px-3 py-2 pl-7 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
+                  <input type="number" value={monthlyHoa} onChange={(e) => setMonthlyHoa(Number(e.target.value))} className="w-full px-3 py-2 pl-7 text-sm text-gray-900 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent" />
                 </div>
               </div>
               <div>
